@@ -2,8 +2,6 @@ import torchvision
 import torch.nn as nn
 import matplotlib.pyplot as plt
 import os
-
-# unser import stuff
 import random
 import torch
 from pyparsing import results
@@ -18,20 +16,27 @@ import time
 # GLOBAL CONFIGURATION
 # ======================================================================================================================
 
+# Limit PyTorch CPU parallelism to reduce scheduling overhead on the competition hardware.
+torch.set_num_threads(22)  # Match the number of physical CPU cores rather than logical threads
+torch.set_num_interop_threads(2)  # Keep inter-op parallelism low; one or two threads are usually sufficient
 
-torch.set_num_threads(22)  # = Anzahl physischer Kerne, nicht logischer
-torch.set_num_interop_threads(2)  # niedrig halten, meist reicht 1-2
-
+# Every sampled architecture assigns one operation from this list to each edge of the cell DAG
 OPERATION_NAMES = ["conv3x3", "conv5x5", "maxpool3x3", "avgpool3x3", "skip", "none", "dil_sep_conv3x3"]
 # standard: "conv3x3", "conv5x5", "maxpool3x3", "avgpool3x3", "skip", "none"
 # new: "sep_conv3x3", "sep_conv5x5", "dil_sep_conv3x3", "conv1x1", "factorized_conv5x5", "avgpool3x3_conv1x1"
+
+# Use one shared device selection for model construction, proxy evaluation, and candidate training
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# The search space uses a fully connected directed acyclic graph between ordered cell nodes
+# EDGES below contains every connection from an earlier node i to a later node j
 NUM_NODES = 5
 NUM_CELLS = 2
 EDGES = [(i, j) for j in range(1, NUM_NODES) for i in range(j)]
 SEED = 42
 
+# This module-level counter is referenced when naming Hyperband result files
+hyperband_counter = 0
 
 # ======================================================================================================================
 # NAS SEARCH WRAPPER
@@ -57,10 +62,12 @@ class NAS:
     """
 
     def __init__(self, train_loader, valid_loader, metadata, clock):
+        # Store shared search resources so all helper methods use the same data, metadata, and clock
         self.train_loader = train_loader
         self.valid_loader = valid_loader
         self.metadata = metadata
         self.clock = clock
+        self.hyperband_counter = 0
 
     # --------------------------------------------------
     # MAIN ENTRY POINT
@@ -68,26 +75,29 @@ class NAS:
 
     def search(self):
         total_time = self.clock.check()
+
+        # Reserve most of the available runtime for architecture search and a separate portion for final training
         search_time_limit = total_time * 0.80
         train_time_limit = total_time * 0.15
 
-        print(
-            f"⏱️ Total Time: {show_time(total_time)} | Search Budget: 80% ({show_time(search_time_limit)}) | Train Budget: 15% ({show_time(train_time_limit)})")
+        print(f"⏱️ Total Time: {show_time(total_time)} | Search Budget: 80% ({show_time(search_time_limit)}) | Train Budget: 15% ({show_time(train_time_limit)})")
 
         self.metadata['target_training_time_seconds'] = train_time_limit
 
+        # Estimate dataset- and hardware-specific training speed before selecting the Hyperband budget
         time_per_epoch = self._estimate_epoch_time()
         print(f"⏱️ Estimated time per epoch: {time_per_epoch:.2f} seconds")
+
 
         eta = 3
         conservative_s_max = 3
         estimated_max_budget = int(
             (search_time_limit / time_per_epoch) / ((conservative_s_max + 1) * (eta / (eta - 1))))
-        max_budget = max(5, min(estimated_max_budget, 50))
+        max_budget = min(estimated_max_budget, 50)
 
         print(f"⚙️ Dynamically set Hyperband max_budget_per_model to: {max_budget} epochs")
 
-        # --- THE CONTINUOUS SEARCH LOOP ---
+        # Track the complete search phase independently of the runtime of an individual Hyperband pass
         global_search_start = time.time()
 
         ultimate_best_model_state = None
@@ -136,7 +146,7 @@ class NAS:
 
         print(f"\n🛑 Search Phase Complete! Executed {pass_num - 1} full Hyperband passes.")
 
-        # --- RECONSTRUCT THE ULTIMATE BEST MODEL ---
+        # Reconstruct the winning architecture independently of temporary models used during search
         final_model = None
         if ultimate_best_arch is not None and ultimate_best_model_state is not None:
             in_channels = self.metadata['input_shape'][1]
@@ -148,7 +158,9 @@ class NAS:
         return final_model
 
     def _estimate_epoch_time(self):
-        """Runs a tiny fraction of an epoch to estimate the speed of the current dataset/hardware."""
+        """
+        Runs a tiny fraction of an epoch to estimate the speed of the current dataset/hardware.
+        """
         arch = self.random_architecture()
         model = self._build_model_from_arch(arch).to(DEVICE)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
@@ -157,6 +169,7 @@ class NAS:
         max_batches_to_test = 10
         batches_run = 0
 
+        # Measure only a small prefix of the training loader to keep the runtime probe inexpensive
         for data, target in self.train_loader:
             if batches_run >= max_batches_to_test: break
             data, target = data.to(DEVICE), target.to(DEVICE)
@@ -175,17 +188,19 @@ class NAS:
         del optimizer
         torch.cuda.empty_cache()
 
-        # Extrapolate to full epoch
+        # Extrapolate the measured average mini-batch time to a complete epoch
         return (time_taken / max(1, batches_run)) * total_batches
 
     def random_architecture(self, rng=None):
-        """Sample a random architecture (dict mapping edge -> operation name)."""
+        """
+        Sample a random architecture (dict mapping edge -> operation name)
+        """
         if rng is None:
             rng = random.Random()
         return {e: rng.choice(OPERATION_NAMES) for e in EDGES}
 
     # --------------------------------------------------
-    # ZERO-SHOT PROXY - ACTIVE
+    # ZERO-SHOT PROXY
     # --------------------------------------------------
 
     def _build_model_from_arch(self, arch, channels=16, num_cells=NUM_CELLS, device=DEVICE):
@@ -207,7 +222,7 @@ class NAS:
     def _get_zero_shot_batch(self, batch_size=16, device=DEVICE):
         """
         Take one small real batch from the training data.
-        NASWOT needs real data, SynFlow does not.
+        Reuse a small real mini-batch for all data-dependent zero-shot proxies.
         """
         data, target = next(iter(self.train_loader))
         data = data[:batch_size].to(device)
@@ -219,6 +234,8 @@ class NAS:
         Lightweight FLOP estimate for Conv2d and Linear layers.
         This is not a perfect profiler, but good enough for hard filtering/ranking.
         """
+
+        # Forward hooks accumulate approximate operation counts without an external profiling dependency.
         flops = 0
         hooks = []
 
@@ -286,6 +303,8 @@ class NAS:
         Returns:
             (is_valid, info_dict)
         """
+
+        # Keep rejection reasons and efficiency measurements for diagnostics and later candidate ranking
         info = {
             "reason": "ok",
             "n_params": None,
@@ -295,12 +314,13 @@ class NAS:
             "conv_edges": None,
         }
 
-        # TODO: Werte, nochmal checken
+        # Temporarily disabled
         if max_params is None:
             max_params = self.metadata.get("max_params", 100_000_000_000)
         if max_flops is None:
             max_flops = self.metadata.get("max_flops", 1_000_000_000_000)
 
+        # Apply inexpensive structural checks before constructing and executing the candidate model
         active_edges = sum(op != "none" for op in arch.values())
         none_edges = sum(op == "none" for op in arch.values())
         conv_edges = sum(op in ["conv3x3", "conv5x5"] for op in arch.values())
@@ -357,6 +377,7 @@ class NAS:
                 info["reason"] = "non_finite_forward_output"
                 return False, info
 
+            # Estimate computational cost only after structural, parameter, and forward-pass checks succeed
             flops = self.estimate_flops(model, x)
             info["flops"] = flops
 
@@ -367,8 +388,6 @@ class NAS:
             return True, info
 
         except RuntimeError as e:
-            #if "out of memory" in str(e).lower() and torch.cuda.is_available():
-                #torch.cuda.empty_cache()
             info["reason"] = f"runtime_error: {str(e)[:120]}"
             return False, info
 
@@ -379,23 +398,20 @@ class NAS:
         finally:
             if owns_model:
                 del model
-                #if torch.cuda.is_available():
-                    #torch.cuda.empty_cache()
 
     def naswot_score(self, model, x):
         """
         NASWOT as the primary zero-shot ranking proxy because it estimates architecture quality from
         activation patterns at initialization without requiring gradient-based training
-
-        NASWOT score:
-        Uses the binary activation pattern after ReLU layers.
-        Higher score usually means more expressive activation diversity.
         """
+
         model.eval()
+
+        # Store one flattened binary activation matrix for every ReLU layer reached during the forward pass
         binary_activations = []
         hooks = []
 
-        # Hook wird automatisch ausgeführt, sobald die ReLU Schicht aufgerufen wird
+        # The hook is executed automatically whenever a ReLU module performs a forward pass
         def relu_hook(module, inputs, output):
             if not isinstance(output, torch.Tensor):
                 return
@@ -403,38 +419,38 @@ class NAS:
                 return
 
             activation = (output.detach() > 0).flatten(start_dim=1).float()
-            binary_activations.append(activation)  # ReLU-Output wird in ein binäres Muster umgewandelt
+            binary_activations.append(activation)  # Convert each ReLU output into a binary activation pattern
 
         for module in model.modules():
             if isinstance(module, nn.ReLU):
                 hooks.append(module.register_forward_hook(relu_hook))
 
-        try:  # Forward-Pass
-            with torch.no_grad():  # keine Gradienten werden gespeichert
+        try:  # Run a forward pass while the hooks collect activation patterns
+            with torch.no_grad():  # Gradients are not required for the NASWOT score
                 _ = model(x)
 
             if len(binary_activations) == 0:
                 return float("-inf")
 
             batch_size = x.shape[0]
+            # The NASWOT kernel compares agreement of activation states between all pairs of samples
             kernel_matrix = torch.zeros(
                 (batch_size, batch_size),
                 device=x.device,
                 dtype=torch.float32
             )
 
-            # Für jede ReLU-Schicht wird gezählt, wie ähnlich die binären Aktivierungsmuster zweier Samples sind
+            # Accumulate pairwise similarities of binary activation patterns across all ReLU layers
             for activation in binary_activations:
-                kernel_matrix += activation @ activation.t()  # beide Samples aktivieren denselben Neuron-Ausgang
+                kernel_matrix += activation @ activation.t()  # Both samples activate the same neuron outputs
                 kernel_matrix += (1.0 - activation) @ (
-                        1.0 - activation).t()  # beide Samples deaktivieren denselben Neuron-Ausgang
-            # Ergebnis: Wie ähnlich reagieren zwei Eingabebilder auf die Architektur?
+                        1.0 - activation).t()  # Both samples deactivate the same neuron outputs
 
             # Numerical stability for log determinant
             eps = 1e-6
             kernel_matrix += eps * torch.eye(batch_size, device=x.device)
 
-            sign, logdet = torch.linalg.slogdet(kernel_matrix)  # NASWOT-Score
+            sign, logdet = torch.linalg.slogdet(kernel_matrix)  # Use the log determinant as the NASWOT score.
 
             if sign <= 0 or not torch.isfinite(logdet):
                 return float("-inf")
@@ -452,12 +468,8 @@ class NAS:
         """
         SynFlow as an auxiliary trainability proxy to detect architectures with
         poor signal propagation at initialization
-
-        SynFlow score:
-        Data-independent trainability score.
-        Linearizes the network by taking absolute weights, forwards an all-ones input,
-        backpropagates the summed output, and sums |weight * gradient|.
         """
+
         if input_shape is None:
             input_shape = self.metadata["input_shape"]
 
@@ -466,6 +478,7 @@ class NAS:
         height = int(input_shape[2])
         width = int(input_shape[3])
 
+        # Save original parameter signs so SynFlow can restore the model after linearization
         signs = {}
         was_training = model.training
 
@@ -473,8 +486,8 @@ class NAS:
             model.eval()
             model.zero_grad(set_to_none=True)
 
-            # Linearize model: Alle Parameter werden positiv
-            # Damit sich positive und negative Pfade nicht gegenseitig auslöschen
+            # Linearize the model by replacing every trainable parameter with its absolute value
+            # This prevents positive and negative paths from cancelling each other during propagation
             with torch.no_grad():
                 for name, parameter in model.named_parameters():
                     if parameter.requires_grad:
@@ -482,7 +495,7 @@ class NAS:
                         parameter.abs_()
 
             x = torch.ones((1, channels, height, width),
-                           device=device)  # künstlicher Input, Implementierung datenunabhängig
+                           device=device)  # Use an artificial all-ones input to keep SynFlow data-independent
             output = model(x)  # Forward-Pass
             torch.sum(output).backward()  # Backward-Pass
 
@@ -500,7 +513,7 @@ class NAS:
             return float("-inf")
 
         finally:
-            # Restore original parameter signs.
+            # Restore original parameter signs
             with torch.no_grad():
                 for name, parameter in model.named_parameters():
                     if parameter.requires_grad and name in signs:
@@ -511,12 +524,7 @@ class NAS:
 
     def gradnorm_score(self, model, x, target):
         """
-        GradNorm:
-        Computes the sum of absolute gradients after one supervised loss backward pass.
-
-        Interpretation:
-        Higher GradNorm means the architecture produces stronger gradient signals at initialization.
-        Very small values can indicate weak signal propagation or dead paths.
+        GradNorm computes the sum of absolute gradients after one supervised loss backward pass.
         """
         was_training = model.training
 
@@ -547,16 +555,9 @@ class NAS:
 
     def snip_score(self, model, x, target):
         """
-        SNIP:
-        Computes one-shot connection sensitivity at initialization.
-
-        Score:
-            sum(|parameter * gradient|)
-
-        Interpretation:
-        Higher SNIP means the current architecture has weights that strongly affect
-        the supervised loss on a small batch.
+        SNIP computes one-shot connection sensitivity at initialization.
         """
+
         was_training = model.training
 
         try:
@@ -586,19 +587,17 @@ class NAS:
 
     def zen_score(self, model, x, epsilon=1e-2):
         """
-        Zen-Score inspired proxy:
-        Measures how strongly the architecture changes its internal representation when
+        Zen-Score inspired proxy measures how strongly the architecture changes its internal representation when
         the input is slightly perturbed.
 
         Practical implementation for this search space:
         - run x and x + noise through the initialized network
         - compare the feature tensor directly before global average pooling
         - add a small BatchNorm scaling term
-
-        Interpretation:
-        Higher Zen-Score usually means richer input sensitivity / expressivity at initialization.
         """
+
         was_training = model.training
+        # Capture the tensor before global average pooling to retain spatial representation information.
         features = []
         hooks = []
 
@@ -610,11 +609,12 @@ class NAS:
             model.eval()
 
             # Prefer the tensor before global average pooling, because it still contains
-            # spatial feature information. Fallback below uses logits if this hook is unavailable.
+            # spatial feature information. Fallback below uses logits if this hook is unavailable
             if hasattr(model, "global_pool"):
                 hooks.append(model.global_pool.register_forward_hook(feature_hook))
 
             with torch.no_grad():
+                # Compare the original representation with the response to a small random perturbation
                 noise = torch.randn_like(x)
                 x_perturbed = x + epsilon * noise
 
@@ -626,9 +626,9 @@ class NAS:
 
                 feature_diff = torch.mean(torch.abs(feature_1 - feature_2))
 
-                # BatchNorm scaling term, common in Zen-style implementations.
+                # BatchNorm scaling term, common in Zen-style implementations
                 # For freshly initialized BatchNorm weights this is usually close to zero,
-                # but it keeps the score compatible with architectures containing BN.
+                # but it keeps the score compatible with architectures containing BN
                 bn_term = 0.0
                 for module in model.modules():
                     if isinstance(module, nn.BatchNorm2d) and module.weight is not None:
@@ -651,20 +651,10 @@ class NAS:
 
     def fisher_score(self, model, x, target):
         """
-        Fisher / empirical Fisher proxy:
-        Approximates the diagonal Fisher information at initialization with squared
+        Fisher approximates the diagonal Fisher information at initialization with squared
         gradients from one supervised mini-batch.
-
-        Score:
-            sum(gradient ** 2)
-
-        Interpretation:
-        Higher Fisher means the model output/loss is more sensitive to its parameters.
-        Very small values can indicate weak learning signal or dead paths.
-
-        Note:
-        This uses labels from the zero-shot batch, so it is data-dependent.
         """
+
         was_training = model.training
 
         try:
@@ -694,25 +684,13 @@ class NAS:
 
     def jacobian_score(self, model, x, target=None):
         """
-        Jacobian-based proxy:
-        Measures how diverse the input gradients are across samples.
+        Jacobian-based proxy measures how diverse the input gradients are across samples.
 
         Practical implementation:
         - make the input require gradients
         - compute gradients of selected logits with respect to the input
         - flatten per-sample Jacobians
         - compute logdet of the Jacobian Gram matrix
-
-        Score:
-            logdet(J J^T + eps * I)
-
-        Interpretation:
-        Higher score means different samples induce more diverse input-output
-        sensitivities at initialization. This can be interpreted as a crude
-        expressivity/separability proxy.
-
-        If target is given, the logit of the true class is used.
-        Otherwise, the currently predicted logit is used.
         """
         was_training = model.training
 
@@ -720,6 +698,7 @@ class NAS:
             model.eval()
             model.zero_grad(set_to_none=True)
 
+            # Differentiate selected output logits with respect to an independent copy of the input batch.
             x_for_grad = x.detach().clone().requires_grad_(True)
             output = model(x_for_grad)
 
@@ -739,7 +718,7 @@ class NAS:
             jacobian = input_grad.flatten(start_dim=1)
 
             # Normalize each sample's gradient vector. This makes the score less
-            # dominated by pure gradient magnitude and more focused on diversity.
+            # dominated by pure gradient magnitude and more focused on diversity
             jacobian = jacobian / (torch.norm(jacobian, dim=1, keepdim=True) + 1e-12)
 
             gram_matrix = jacobian @ jacobian.t()
@@ -776,11 +755,13 @@ class NAS:
 
         enabled_proxies controls which proxies are computed, for example:
             ("naswot", "synflow")
+            or
             ("naswot", "synflow", "gradnorm", "snip", "zen", "fisher", "jacobian")
 
         Returns a dict because the individual scores are normalized later
         across all candidates inside zero_shot_filter().
         """
+
         owns_model = model is None
         enabled_proxies = tuple(enabled_proxies)
 
@@ -883,11 +864,14 @@ class NAS:
         efficiency_weights:
             Penalties for model cost, e.g. {"flops": 0.10, "n_params": 0.10}
         """
+
+        # Return immediately when the caller provides no candidate architectures
         if architectures is None or len(architectures) == 0:
             return []
 
         enabled_proxies = tuple(enabled_proxies)
 
+        # Default weights emphasize NASWOT while retaining auxiliary trainability signals
         if proxy_weights is None:
             proxy_weights = {
                 "naswot": 1.00,
@@ -895,8 +879,8 @@ class NAS:
                 "gradnorm": 0.20,
                 "snip": 0.20,
                 "zen": 0.20,
-                "fisher": 0.15,
-                "jacobian": 0.15,
+                "fisher": 0.20,
+                "jacobian": 1.00,
             }
 
         if efficiency_weights is None:
@@ -906,11 +890,13 @@ class NAS:
             }
 
         top_k = max(1, min(top_k, len(architectures)))
+        # Score every candidate on the same mini-batch for a consistent comparison
         x, target = self._get_zero_shot_batch(batch_size=forward_batch_size, device=device)
 
         scored_candidates = []
         rejected_reasons = {}
 
+        # Process candidates independently so one invalid architecture cannot stop the complete filter
         for idx, arch in enumerate(architectures):
             model = None
 
@@ -947,6 +933,7 @@ class NAS:
                     enabled_proxies=enabled_proxies,
                 )
 
+                # Reject candidates whenever any enabled proxy produces a non-finite score
                 has_invalid_proxy = False
                 for proxy_name in enabled_proxies:
                     proxy_value = proxy_info.get(proxy_name, float("-inf"))
@@ -978,8 +965,8 @@ class NAS:
             self.last_zero_shot_results = []
             return architectures[:top_k]
 
-        # Optional: remove only the worst SynFlow tail.
-        # This is only applied when SynFlow is part of the enabled proxy set.
+        # Optional: remove only the worst SynFlow tail
+        # This is only applied when SynFlow is part of the enabled proxy set
         if "synflow" in enabled_proxies and len(scored_candidates) > top_k and synflow_drop_fraction > 0:
             before_synflow_filter = len(scored_candidates)
 
@@ -1001,7 +988,7 @@ class NAS:
                         rejected_reasons.get("low_synflow_tail", 0) + removed_by_synflow
                 )
 
-        # Normalize all selected proxy values dynamically.
+        # Normalize all selected proxy values dynamically
         normalized_proxy_values = {}
         for proxy_name in enabled_proxies:
             normalized_proxy_values[proxy_name] = self._minmax_normalize(
@@ -1011,6 +998,7 @@ class NAS:
         params_norm = self._minmax_normalize([candidate["n_params"] for candidate in scored_candidates])
         flops_norm = self._minmax_normalize([candidate["flops"] for candidate in scored_candidates])
 
+        # Combine quality proxies and subtract normalized parameter and FLOP penalties
         for candidate_idx, candidate in enumerate(scored_candidates):
             final_score = 0.0
 
@@ -1020,11 +1008,12 @@ class NAS:
                         * normalized_proxy_values[proxy_name][candidate_idx]
                 )
 
-            final_score -= efficiency_weights.get("flops", 0.0) * flops_norm[candidate_idx]
-            final_score -= efficiency_weights.get("n_params", 0.0) * params_norm[candidate_idx]
+            final_score -= efficiency_weights.get("flops", 0.1) * flops_norm[candidate_idx]
+            final_score -= efficiency_weights.get("n_params", 0.1) * params_norm[candidate_idx]
 
             candidate["final_proxy_score"] = final_score
 
+        # Rank candidates by the final weighted score and retain the complete ordering
         scored_candidates.sort(key=lambda c: c["final_proxy_score"], reverse=True)
 
         self.last_zero_shot_results = scored_candidates
@@ -1064,6 +1053,8 @@ class NAS:
 
     def train_one_epoch(self, model, train_loader, optimizer, device):
         """Train the model for one epoch and return the mean batch loss."""
+
+        # Enable training behavior for modules such as BatchNorm before processing mini-batches
         model.train()
         total_loss = 0.0
         n_batches = 0
@@ -1102,6 +1093,7 @@ class NAS:
                            ):
         in_channels = self.metadata['input_shape'][1]
         num_classes = self.metadata['num_classes']
+        # Build a fresh model for this architecture and keep the best validation checkpoint
         model = NASNetwork(arch, NUM_CELLS, channels=channels,
                            num_classes=num_classes, in_channels=in_channels).to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -1111,6 +1103,7 @@ class NAS:
         best_val_acc = 0.0
         best_model_state = None
 
+        # Evaluate after every epoch so the returned model is not tied to the final epoch only
         for epoch in tqdm(range(num_epochs), desc="Training", leave=False):
             loss = self.train_one_epoch(model, train_loader, optimizer, device)
             train_losses.append(loss)
@@ -1127,20 +1120,13 @@ class NAS:
 
         return best_val_acc, model, train_losses, val_accs
 
-    # ------------------------------------------------------------------------------------------------------------------
-    # CURRENT ACTIVE SEARCH STRATEGY: RANDOM SEARCH
-    # ------------------------------------------------------------------------------------------------------------------
-
-
-
     # --------------------------------------------------
-    # HYPERBAND / SUCCESSIVE HALVING - PREPARED, NOT ACTIVE
+    # HYPERBAND / SUCCESSIVE HALVING
     # --------------------------------------------------
+
     def hyperband_search(self,rng, min_budget_per_model=1, max_budget_per_model=27, eta=3, search_time_limit=None):
-        print("\n" + "=" * 60)
-        print("Starting Hyperband Search...")
-        print("=" * 60)
-        """The hyperband algorithm
+        """
+        The hyperband algorithm
 
         Parameters
         ----------
@@ -1153,12 +1139,19 @@ class NAS:
         eta : float
             The eta parameter. Determines the reduction factor of models.
 
-        Returns
-        -------
-        TODO
+        skip_low_s_brackets : int
+            How many of the final brackets (highest starting budgets) to skip.
+            0 runs standard Hyperband. 1 skips the s=0 bracket, etc.
         """
+
+        print("\n" + "=" * 60)
+        print("Starting Hyperband Search...")
+        print("=" * 60)
+
+        # All brackets in this pass share one search timer
         start_time = time.time()
 
+        # Derive the number of Hyperband brackets from the ratio between maximum and minimum budgets
         x = max_budget_per_model / min_budget_per_model
         s_max = int(math.floor(math.log(x) / math.log(eta)))
 
@@ -1173,6 +1166,7 @@ class NAS:
         # tqdm gives us a nice progress bar
         for s in tqdm(iterations, desc="Hyperband iter"):
 
+            # The bracket index controls both the initial candidate count and the initial per-model budget
             n_models = int(math.ceil((s_max + 1) / (s + 1) * eta ** s))
 
             min_budget_per_model_iter = max(1,int(math.ceil(max_budget_per_model / eta ** s)))
@@ -1197,11 +1191,12 @@ class NAS:
             # best_acc_history.append(global_best_val_acc)
 
             # If the inner loop timed out (or we naturally crossed the limit during bookkeeping),
-            # stop Hyperband immediately before it tries to spin up another bracket.
+            # stop Hyperband immediately before it tries to spin up another bracket
             if search_time_limit and (time.time() - start_time) >= search_time_limit:
                 print("\n⚠️ Hyperband iteration halting immediately to respect search time limit.")
                 break
 
+        # Rebuild the best checkpoint only after all completed brackets have been compared
         best_model = None
         if global_best_arch is not None and global_best_model_state is not None:
             in_channels = self.metadata['input_shape'][1]
@@ -1211,6 +1206,7 @@ class NAS:
             best_model.load_state_dict(global_best_model_state)
 
         best_acc_history = []
+        # Convert raw evaluations into a monotonically increasing best-so-far history for plotting
         running_best = -1.0
         for r in global_results:
             if r[1] > running_best:
@@ -1224,7 +1220,8 @@ class NAS:
 
     def successive_halving_round(self,rng, n_models: int, min_budget_per_model: int, max_budget_per_model: int, eta: float,
                                  search_time_limit: float = None, start_time: float = None):
-        """The successive_halving routine as called by hyperband
+        """
+        The successive_halving routine as called by hyperband
 
         Parameters
         ----------
@@ -1255,9 +1252,8 @@ class NAS:
         in_channels = self.metadata['input_shape'][1]
         num_classes = self.metadata['num_classes']
 
-        # Generate more candidates than we can actually train.
-        # Zero-shot filtering chooses the most promising subset.
-        # TODO: KI Werte, nochmal checken
+        # Generate more candidates than we can actually train
+        # Zero-shot filtering chooses the most promising subset
         n_candidates = 1000
         top_k_to_train = n_models
 
@@ -1267,6 +1263,7 @@ class NAS:
         ]
 
         print("time remaining before zero shot filter: ~{}".format(show_time(self.clock.check())))
+        # Hard filtering and zero-shot proxies reduce the large random pool to the requested bracket size
         architectures_to_train = self.zero_shot_filter(
             candidate_architectures,
             top_k=top_k_to_train,
@@ -1281,6 +1278,7 @@ class NAS:
         if len(architectures_to_train) == 0:
             architectures_to_train = [self.random_architecture(rng)]
 
+        # Store architecture, network state, optimizer state, and cumulative budget for warm-started promotions
         active_models = {}
         for i in range(n_models):
             active_models[i] = {
@@ -1299,6 +1297,7 @@ class NAS:
         bracket_best_arch = None
         bracket_best_state = None
 
+        # Increase the cumulative training budget after each elimination round
         while budget <= max_budget_per_model:
             print(
                 f"--- SH Iteration {iteration} | Target Budget: {budget} Epochs | Active Models: {len(active_models)}")
@@ -1315,6 +1314,7 @@ class NAS:
                         print("⚠️ Search time limit 80% reached! Halting SH bracket early to save time for training.")
                         return bracket_best_state, bracket_best_acc, bracket_best_arch, bracket_results
 
+                # Recreate the candidate model and restore its previous checkpoint when available
                 arch = state["arch"]
                 model = NASNetwork(arch, NUM_CELLS, channels=16,
                                    num_classes=num_classes, in_channels=in_channels).to(DEVICE)
@@ -1325,6 +1325,7 @@ class NAS:
                     model.load_state_dict(state["model_state"])
                     optimizer.load_state_dict(state["optim_state"])
 
+                # Train only the additional epochs required to reach the new cumulative budget
                 epochs_to_train = int(budget - state["epochs_trained"])
 
                 # Train the delta epochs
@@ -1336,6 +1337,7 @@ class NAS:
                 state["val_acc"] = val_acc
 
                 # Save state back to RAM
+                # Persist model and optimizer states before releasing the temporary GPU objects
                 state["model_state"] = copy.deepcopy(model.state_dict())
                 state["optim_state"] = copy.deepcopy(optimizer.state_dict())
 
@@ -1353,7 +1355,7 @@ class NAS:
                 del optimizer
                 torch.cuda.empty_cache()
 
-            # Compute configurations to keep
+            # Retain approximately one out of every eta candidates according to validation accuracy
             num_configs_to_proceed = max(1, int(len(active_models) / eta))
             sorted_models = sorted(active_models.items(), key=lambda item: item[1]["val_acc"], reverse=True)
             active_models = dict(sorted_models[:num_configs_to_proceed])
@@ -1369,65 +1371,70 @@ class NAS:
 
     def save_plot(self, best_model, n_architectures, best_acc_history, best_val_acc, results, best_arch):
         # ----------------------------------------------------------
-        # Plots speichern
+        # Save diagnostic plots for the current Hyperband pass
         # ----------------------------------------------------------
+
+        global hyperband_counter
+
         os.makedirs("figures", exist_ok=True)
 
         if len(results) == 0:
             print("No results to plot.")
             return
 
-        # --- Plot 1: Verlauf der Genauigkeit über die Suche ---
+        # --- Plot 1: Validation accuracy throughout the architecture search ---
+        # Plot individual validation results together with the best result observed so far.
         iterations = list(range(1, len(results) + 1))
         raw_accs = [r[1] for r in results]
         codename = self.metadata["codename"]
         plt.figure(figsize=(8, 5))
         plt.plot(iterations, raw_accs, marker='o', linestyle='-', color='gray',
-                 alpha=0.6, label='Val Acc pro Architektur')
+                 alpha=0.6, label='Val Acc by Architecture')
         plt.plot(iterations, best_acc_history, marker='o', linestyle='-', color='red',
-                 linewidth=2, label='Bester Wert bisher')
-        plt.xlabel('Architektur (Iteration)')
+                 linewidth=2, label='Best result so far')
+        plt.xlabel('Architecture (Iteration)')
         plt.ylabel('Validation Accuracy')
-        plt.title('Verlauf der Genauigkeit während der Random Search')
+        plt.title('Validation Accuracy over all architectures')
         plt.legend()
         plt.grid(True, alpha=0.3)
         plt.tight_layout()
-        plt.savefig(f"figures/{codename}_accuracy_progress{codename}.png")
+        plt.savefig(f"figures/{codename}_accuracy_progress{codename}_{str(hyperband_counter)}.png")
         plt.close()
 
-        # --- Plot 2: Accuracy vs. Parameteranzahl ---
+        # --- Plot 2: Validation accuracy versus parameter count ---
+        # Visualize the relationship between model size and validation accuracy.
         params = [r[2] for r in results]
         accs = [r[1] for r in results]
 
         plt.figure(figsize=(8, 5))
-        plt.scatter(params, accs, c='blue', label='Gefundene Architekturen')
+        plt.scatter(params, accs, c='blue', label='found architectures')
 
         if best_model is not None:
             best_params = count_parameters(best_model)
             plt.scatter([best_params], [best_val_acc], c='red', s=100,
-                        label='Beste Architektur', zorder=5)
-        plt.xlabel('Anzahl Parameter')
+                        label='Best Architecture', zorder=5)
+        plt.xlabel('Number of Parameters')
         plt.ylabel('Validation Accuracy')
-        plt.title('Validation Accuracy vs. Parameteranzahl')
+        plt.title('Validation Accuracy vs. Parametercount')
         plt.legend()
         plt.grid(True, alpha=0.3)
         plt.tight_layout()
-        plt.savefig(f"figures/{codename}_random_search_results.png")
+        plt.savefig(f"figures/{codename}_random_search_results{str(hyperband_counter)}.png")
         plt.close()
 
         # ----------------------------------------------------------
-        # Rohdaten speichern
+        # Save the raw search results for later analysis.
         # ----------------------------------------------------------
         os.makedirs("results", exist_ok=True)
 
-        # --- CSV: eine Zeile pro Architektur (ohne volle Architektur-Details) ---
-        with open(f"results/{codename}_random_search_results.csv", "w", newline="") as f:
+        # --- CSV: one row per evaluated architecture without the full architecture specification ---
+        with open(f"results/{codename}_hyper_band_results{str(hyperband_counter)}.csv", "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["iteration", "val_acc", "best_val_acc_so_far", "n_params"])
             for idx, (arch, val_acc, n_param) in enumerate(results, start=1):
                 writer.writerow([idx, float(val_acc), float(best_acc_history[idx - 1]), int(n_param)])
 
-        # --- JSON: volle Details inkl. Architektur selbst ---
+        # --- JSON: complete results including the architecture specification ---
         json_results = []
         for idx, (arch, val_acc, n_param) in enumerate(results, start=1):
             # Tupel-Keys (i, j) -> String "i_j", damit JSON-kompatibel
@@ -1443,12 +1450,13 @@ class NAS:
         if best_arch is not None:
             best_arch_serializable = {f"{i}_{j}": op for (i, j), op in best_arch.items()}
 
-        with open(f"results/{codename}_random_search_results.json", "w") as f:
+        with open(f"results/{codename}_random_search_results_{str(hyperband_counter)}.json", "w") as f:
             json.dump({
                 "results": json_results,
                 "best_architecture": best_arch_serializable,
                 "best_val_acc": float(best_val_acc),
             }, f, indent=2)
+        self.hyperband_counter = self.hyperband_counter + 1
 
 
 # ======================================================================================================================
@@ -1489,7 +1497,9 @@ class NASNetwork(nn.Module):
 
 
 class NASCell(nn.Module):
-    """DAG cell: each subsequent node sums all incoming edge outputs."""
+    """
+    DAG cell: each subsequent node sums all incoming edge outputs
+    """
 
     def __init__(self, arch, channels):
         super().__init__()
@@ -1517,6 +1527,8 @@ class NASCell(nn.Module):
 # ======================================================================================================================
 
 def make_operation(op_name, channels):
+
+    # All candidate operations preserve channel count and spatial resolution so edge outputs can be summed
     if op_name == "conv3x3":
         return nn.Sequential(
             nn.Conv2d(channels, channels, 3, padding=1, bias=False),
@@ -1585,7 +1597,7 @@ def make_operation(op_name, channels):
             nn.BatchNorm2d(channels),
             nn.ReLU(inplace=True),
         )
-
+    # Approximate a 5x5 receptive field with consecutive 1x5 and 5x1 convolutions
     elif op_name == "factorized_conv5x5":
         return nn.Sequential(
             nn.Conv2d(
@@ -1605,7 +1617,7 @@ def make_operation(op_name, channels):
             nn.BatchNorm2d(channels),
             nn.ReLU(inplace=True),
         )
-
+    # Combine spatial smoothing with a learnable pointwise channel projection
     elif op_name == "avgpool3x3_conv1x1":
         return nn.Sequential(
             nn.AvgPool2d(3, stride=1, padding=1),
@@ -1619,7 +1631,9 @@ def make_operation(op_name, channels):
 
 
 class ZeroOp(nn.Module):
-    """Operation that outputs zeros (removes the edge)."""
+    """
+    Operation that outputs zeros (removes the edge)
+    """
 
     def forward(self, x):
         return torch.zeros_like(x)
