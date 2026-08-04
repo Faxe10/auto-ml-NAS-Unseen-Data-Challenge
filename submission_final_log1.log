@@ -1,0 +1,1171 @@
+rm -Rf scoring
+rm -Rf package
+rm -Rf package
+mkdir package
+mkdir package/predictions
+mkdir package/datasets
+rsync -ar --exclude='**/test_y.npy' datasets/* package/datasets/
+cp -R evaluation/main.py package/main.py
+cp -R submission_final/* package
+cd package; python main.py
+==============================================================================
+=============    Your NAS Unseen-Data 2026 Submission is running     =============
+==============================================================================
+========== Dataset  Cryptic   =============================================
+  Metadata:
+   - num_classes         : 2
+   - input_shape         : [59718, 1, 6, 768]
+   - codename            : Cryptic
+   - benchmark           : 13.492
+   - time_limit          : 1
+   - time_remaining      : 3598.144221339
+
+=== Processing Data ===
+  Allotted compute time remaining: ~59m,58s
+🧮 VRAM: 11.60GB frei von 12.49GB | Geschätzte Batchgröße: 1024 (Bild: 1x6x768)
+
+=== Performing NAS ===
+  Allotted compute time remaining: ~59m,57s
+⏱️ Total Time: 59m,57s | Search Budget: 80% (47m,58s) | Train Budget: 15% (8m,59s)
+⏱️ Estimated time per epoch: 22.19 seconds
+⚙️ Dynamically set Hyperband max_budget_per_model to: 21 epochs
+
+============================================================
+🚀 Starting Hyperband Pass 1 | Time remaining for Search: 47m,58s
+============================================================
+
+============================================================
+Starting Hyperband Search...
+============================================================
+Hyperband iter: 0it [00:00, ?it/s]time remaining before zero shot filter: ~59m,53s
+Zero-Shot Filter: 856/1000 candidates kept. 144 rejected/removed. Training top 9.
+Rejected candidates by reason: {'too_few_conv_edges': 43, 'too_many_none_edges': 6, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.0461 | naswot=1.8887e+02 | synflow=4.0939e+08 | Params=29698 | FLOPs=855540224
+  #2: final=0.8877 | naswot=1.9194e+02 | synflow=3.1978e+06 | Params=27938 | FLOPs=805405184
+  #3: final=0.8797 | naswot=1.8596e+02 | synflow=3.4561e+08 | Params=37162 | FLOPs=1074070016
+  #4: final=0.8530 | naswot=1.8588e+02 | synflow=3.0770e+08 | Params=37162 | FLOPs=1074070016
+  #5: final=0.8500 | naswot=1.8868e+02 | synflow=6.4171e+05 | Params=14618 | FLOPs=417006080
+time remaining after zero shot filter: ~59m,37s
+--- SH Iteration 1 | Target Budget: 3 Epochs | Active Models: 9
+
+Evaluating:   0%|          | 0/9 [00:00<?, ?it/s][A
+Evaluating:  11%|█         | 1/9 [01:19<10:32, 79.06s/it][A
+Evaluating:  22%|██▏       | 2/9 [02:40<09:25, 80.73s/it][A
+Evaluating:  33%|███▎      | 3/9 [04:09<08:25, 84.27s/it][A
+Evaluating:  44%|████▍     | 4/9 [05:38<07:10, 86.14s/it][A
+Evaluating:  56%|█████▌    | 5/9 [06:41<05:11, 77.82s/it][A
+Evaluating:  67%|██████▋   | 6/9 [08:01<03:55, 78.55s/it][A
+Evaluating:  78%|███████▊  | 7/9 [09:46<02:54, 87.30s/it][A
+Evaluating:  89%|████████▉ | 8/9 [11:03<01:23, 83.84s/it][A
+Evaluating: 100%|██████████| 9/9 [11:59<00:00, 75.37s/it][A
+                                                         [A--- SH Iteration 2 | Target Budget: 9 Epochs | Active Models: 3
+
+Evaluating:   0%|          | 0/3 [00:00<?, ?it/s][A
+Evaluating:  33%|███▎      | 1/3 [02:54<05:49, 174.82s/it][A
+Evaluating:  67%|██████▋   | 2/3 [05:30<02:43, 163.85s/it][A
+Evaluating: 100%|██████████| 3/3 [07:22<00:00, 140.12s/it][A
+                                                          [AHyperband iter: 1it [19:38, 1178.99s/it]time remaining before zero shot filter: ~40m,14s
+Zero-Shot Filter: 862/1000 candidates kept. 138 rejected/removed. Training top 5.
+Rejected candidates by reason: {'too_few_conv_edges': 33, 'too_many_none_edges': 10, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9647 | naswot=1.8688e+02 | synflow=7.7872e+08 | Params=48570 | FLOPs=1410859520
+  #2: final=0.8936 | naswot=1.8884e+02 | synflow=3.1298e+06 | Params=22666 | FLOPs=652935680
+  #3: final=0.8864 | naswot=1.8724e+02 | synflow=1.3896e+06 | Params=13010 | FLOPs=368345600
+  #4: final=0.8814 | naswot=1.8968e+02 | synflow=2.8224e+07 | Params=33210 | FLOPs=957874688
+  #5: final=0.8746 | naswot=1.8717e+02 | synflow=2.1387e+06 | Params=15202 | FLOPs=434405888
+time remaining after zero shot filter: ~39m,58s
+--- SH Iteration 1 | Target Budget: 7 Epochs | Active Models: 5
+
+Evaluating:   0%|          | 0/5 [00:00<?, ?it/s][A
+Evaluating:  20%|██        | 1/5 [04:13<16:52, 253.03s/it][A
+Evaluating:  40%|████      | 2/5 [07:03<10:12, 204.22s/it][A
+Evaluating:  60%|██████    | 3/5 [09:37<06:02, 181.41s/it][A
+Evaluating:  80%|████████  | 4/5 [13:07<03:12, 192.73s/it][A
+Evaluating: 100%|██████████| 5/5 [15:56<00:00, 184.11s/it][A
+                                                          [A--- SH Iteration 2 | Target Budget: 21 Epochs | Active Models: 1
+
+Evaluating:   0%|          | 0/1 [00:00<?, ?it/s][A
+Evaluating: 100%|██████████| 1/1 [05:36<00:00, 336.01s/it][A
+                                                          [AHyperband iter: 2it [41:27, 1254.92s/it]time remaining before zero shot filter: ~18m,26s
+Zero-Shot Filter: 868/1000 candidates kept. 132 rejected/removed. Training top 3.
+Rejected candidates by reason: {'too_few_conv_edges': 31, 'too_many_none_edges': 5, 'low_synflow_tail': 96}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.8625 | naswot=1.9317e+02 | synflow=7.5101e+07 | Params=43602 | FLOPs=1261339136
+  #2: final=0.8558 | naswot=1.9012e+02 | synflow=1.9318e+06 | Params=17546 | FLOPs=501940736
+  #3: final=0.8483 | naswot=1.8926e+02 | synflow=3.7712e+05 | Params=13010 | FLOPs=368345600
+  #4: final=0.8290 | naswot=1.8929e+02 | synflow=3.9543e+06 | Params=18130 | FLOPs=519340544
+  #5: final=0.8279 | naswot=1.8997e+02 | synflow=4.4796e+06 | Params=23402 | FLOPs=671810048
+time remaining after zero shot filter: ~18m,10s
+--- SH Iteration 1 | Target Budget: 21 Epochs | Active Models: 3
+
+Evaluating:   0%|          | 0/3 [00:00<?, ?it/s][A
+Evaluating:  33%|███▎      | 1/3 [11:53<23:47, 713.51s/it][A
+                                                          [AHyperband iter: 2it [53:36, 1608.38s/it]
+⚠️ Search time limit 80% reached! Halting SH bracket early to save time for training.
+
+⚠️ Hyperband iteration halting immediately to respect search time limit.
+🏆 ALL-TIME BEST UPDATED: 63.55%
+
+🛑 Search Phase Complete! Executed 1 full Hyperband passes.
+
+=== Training ===
+  Allotted compute time remaining: ~6m,16s
+	Epoch   1 | Train Acc:  69.33% | Valid Acc:  65.41% | T/Epoch: 22.10s  |
+	Epoch   2 | Train Acc:  69.95% | Valid Acc:  64.50% | T/Epoch: 21.83s  |
+	Epoch   3 | Train Acc:  70.27% | Valid Acc:  65.54% | T/Epoch: 21.83s  |
+	Epoch   4 | Train Acc:  70.41% | Valid Acc:  59.72% | T/Epoch: 21.82s  |
+	Epoch   5 | Train Acc:  70.60% | Valid Acc:  66.74% | T/Epoch: 21.82s  |
+	Epoch   6 | Train Acc:  70.90% | Valid Acc:  64.62% | T/Epoch: 21.81s  |
+	Epoch   7 | Train Acc:  71.01% | Valid Acc:  57.06% | T/Epoch: 21.72s  |
+	Epoch   8 | Train Acc:  71.26% | Valid Acc:  66.90% | T/Epoch: 21.74s  |
+	Epoch   9 | Train Acc:  71.42% | Valid Acc:  52.65% | T/Epoch: 21.73s  |
+	Epoch  10 | Train Acc:  71.61% | Valid Acc:  63.70% | T/Epoch: 21.72s  |
+	Epoch  11 | Train Acc:  71.71% | Valid Acc:  50.09% | T/Epoch: 21.81s  |
+	Epoch  12 | Train Acc:  72.06% | Valid Acc:  67.22% | T/Epoch: 21.81s  |
+	Epoch  13 | Train Acc:  72.22% | Valid Acc:  60.47% | T/Epoch: 21.81s  |
+	Epoch  14 | Train Acc:  72.47% | Valid Acc:  67.94% | T/Epoch: 21.82s  |
+	Epoch  15 | Train Acc:  72.52% | Valid Acc:  53.22% | T/Epoch: 21.81s  |
+
+⏰ Global time budget reached! Halting cleanly after 15 epochs to ensure submission.
+  Total training runtime: 5m,27s
+  Restoring best model weights (Val Acc: 67.94%)
+
+=== Predicting ===
+  Allotted compute time remaining: ~49.23s
+Run time for Cryptic: 3551.657182783001
+Model Training and Prediction Complete
+finished dataset: Cryptic
+========== Dataset   conway   =============================================
+  Metadata:
+   - num_classes         : 25
+   - input_shape         : [5000, 1, 10, 10]
+   - codename            : conway
+   - benchmark           : 47.53
+   - time_limit          : 1
+   - time_remaining      : 3599.980526004001
+
+=== Processing Data ===
+  Allotted compute time remaining: ~59m,59s
+🧮 VRAM: 7.16GB frei von 12.49GB | Geschätzte Batchgröße: 1024 (Bild: 1x10x10)
+
+=== Performing NAS ===
+  Allotted compute time remaining: ~59m,59s
+⏱️ Total Time: 59m,59s | Search Budget: 80% (47m,59s) | Train Budget: 15% (8m,59s)
+⏱️ Estimated time per epoch: 2.15 seconds
+⚙️ Dynamically set Hyperband max_budget_per_model to: 50 epochs
+
+============================================================
+🚀 Starting Hyperband Pass 1 | Time remaining for Search: 47m,59s
+============================================================
+
+============================================================
+Starting Hyperband Search...
+============================================================
+Hyperband iter: 0it [00:00, ?it/s]time remaining before zero shot filter: ~59m,59s
+Zero-Shot Filter: 856/1000 candidates kept. 144 rejected/removed. Training top 27.
+Rejected candidates by reason: {'too_few_conv_edges': 43, 'too_many_none_edges': 6, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9901 | naswot=1.2890e+02 | synflow=4.9129e+09 | Params=30089 | FLOPs=18572800
+  #2: final=0.9423 | naswot=1.2663e+02 | synflow=6.2594e+09 | Params=37553 | FLOPs=23315200
+  #3: final=0.9134 | naswot=1.2855e+02 | synflow=4.3085e+09 | Params=37553 | FLOPs=23315200
+  #4: final=0.8801 | naswot=1.3187e+02 | synflow=3.5543e+08 | Params=28329 | FLOPs=17484800
+  #5: final=0.8644 | naswot=1.3254e+02 | synflow=7.5755e+07 | Params=33449 | FLOPs=20761600
+time remaining after zero shot filter: ~59m,45s
+--- SH Iteration 1 | Target Budget: 2 Epochs | Active Models: 27
+
+Evaluating:   0%|          | 0/27 [00:00<?, ?it/s][A
+Evaluating:   4%|▎         | 1/27 [00:05<02:14,  5.16s/it][A
+Evaluating:   7%|▋         | 2/27 [00:10<02:10,  5.21s/it][A
+Evaluating:  11%|█         | 3/27 [00:15<02:05,  5.23s/it][A
+Evaluating:  15%|█▍        | 4/27 [00:20<02:00,  5.22s/it][A
+Evaluating:  19%|█▊        | 5/27 [00:26<01:56,  5.28s/it][A
+Evaluating:  22%|██▏       | 6/27 [00:31<01:52,  5.36s/it][A
+Evaluating:  26%|██▌       | 7/27 [00:36<01:45,  5.27s/it][A
+Evaluating:  30%|██▉       | 8/27 [00:41<01:37,  5.15s/it][A
+Evaluating:  33%|███▎      | 9/27 [00:46<01:31,  5.11s/it][A
+Evaluating:  37%|███▋      | 10/27 [00:51<01:26,  5.11s/it][A
+Evaluating:  41%|████      | 11/27 [00:57<01:22,  5.14s/it][A
+Evaluating:  44%|████▍     | 12/27 [01:02<01:17,  5.17s/it][A
+Evaluating:  48%|████▊     | 13/27 [01:07<01:11,  5.09s/it][A
+Evaluating:  52%|█████▏    | 14/27 [01:12<01:06,  5.09s/it][A
+Evaluating:  56%|█████▌    | 15/27 [01:17<01:00,  5.08s/it][A
+Evaluating:  59%|█████▉    | 16/27 [01:22<00:54,  4.98s/it][A
+Evaluating:  63%|██████▎   | 17/27 [01:27<00:49,  4.98s/it][A
+Evaluating:  67%|██████▋   | 18/27 [01:32<00:45,  5.08s/it][A
+Evaluating:  70%|███████   | 19/27 [01:37<00:40,  5.03s/it][A
+Evaluating:  74%|███████▍  | 20/27 [01:42<00:35,  5.04s/it][A
+Evaluating:  78%|███████▊  | 21/27 [01:47<00:30,  5.00s/it][A
+Evaluating:  81%|████████▏ | 22/27 [01:52<00:25,  5.17s/it][A
+Evaluating:  85%|████████▌ | 23/27 [01:58<00:20,  5.17s/it][A
+Evaluating:  89%|████████▉ | 24/27 [02:03<00:15,  5.21s/it][A
+Evaluating:  93%|█████████▎| 25/27 [02:08<00:10,  5.13s/it][A
+Evaluating:  96%|█████████▋| 26/27 [02:13<00:05,  5.11s/it][A
+Evaluating: 100%|██████████| 27/27 [02:18<00:00,  5.09s/it][A
+                                                           [A--- SH Iteration 2 | Target Budget: 6 Epochs | Active Models: 9
+
+Evaluating:   0%|          | 0/9 [00:00<?, ?it/s][A
+Evaluating:  11%|█         | 1/9 [00:10<01:22, 10.29s/it][A
+Evaluating:  22%|██▏       | 2/9 [00:20<01:13, 10.50s/it][A
+Evaluating:  33%|███▎      | 3/9 [00:30<01:00, 10.13s/it][A
+Evaluating:  44%|████▍     | 4/9 [00:40<00:50, 10.01s/it][A
+Evaluating:  56%|█████▌    | 5/9 [00:50<00:39,  9.98s/it][A
+Evaluating:  67%|██████▋   | 6/9 [01:00<00:29,  9.95s/it][A
+Evaluating:  78%|███████▊  | 7/9 [01:09<00:19,  9.82s/it][A
+Evaluating:  89%|████████▉ | 8/9 [01:19<00:09,  9.78s/it][A
+Evaluating: 100%|██████████| 9/9 [01:29<00:00,  9.75s/it][A
+                                                         [A--- SH Iteration 3 | Target Budget: 18 Epochs | Active Models: 3
+
+Evaluating:   0%|          | 0/3 [00:00<?, ?it/s][A
+Evaluating:  33%|███▎      | 1/3 [00:31<01:02, 31.29s/it][A
+Evaluating:  67%|██████▋   | 2/3 [00:59<00:29, 29.59s/it][A
+Evaluating: 100%|██████████| 3/3 [01:28<00:00, 29.02s/it][A
+                                                         [AHyperband iter: 1it [05:29, 329.21s/it]time remaining before zero shot filter: ~54m,30s
+Zero-Shot Filter: 862/1000 candidates kept. 138 rejected/removed. Training top 12.
+Rejected candidates by reason: {'too_few_conv_edges': 33, 'too_many_none_edges': 10, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.0941 | naswot=1.3209e+02 | synflow=1.2358e+10 | Params=48961 | FLOPs=30624000
+  #2: final=0.9480 | naswot=1.3198e+02 | synflow=2.6690e+07 | Params=13401 | FLOPs=8000000
+  #3: final=0.9195 | naswot=1.2526e+02 | synflow=1.2094e+10 | Params=37401 | FLOPs=23283200
+  #4: final=0.8945 | naswot=1.3049e+02 | synflow=9.7873e+07 | Params=15161 | FLOPs=9088000
+  #5: final=0.8914 | naswot=1.3241e+02 | synflow=2.4762e+08 | Params=30673 | FLOPs=18950400
+time remaining after zero shot filter: ~54m,16s
+--- SH Iteration 1 | Target Budget: 6 Epochs | Active Models: 12
+
+Evaluating:   0%|          | 0/12 [00:00<?, ?it/s][A
+Evaluating:   8%|▊         | 1/12 [00:15<02:54, 15.89s/it][A
+Evaluating:  17%|█▋        | 2/12 [00:30<02:30, 15.02s/it][A
+Evaluating:  25%|██▌       | 3/12 [00:45<02:14, 14.99s/it][A
+Evaluating:  33%|███▎      | 4/12 [00:59<01:57, 14.72s/it][A
+Evaluating:  42%|████▏     | 5/12 [01:14<01:43, 14.84s/it][A
+Evaluating:  50%|█████     | 6/12 [01:28<01:27, 14.59s/it][A
+Evaluating:  58%|█████▊    | 7/12 [01:42<01:12, 14.44s/it][A
+Evaluating:  67%|██████▋   | 8/12 [01:57<00:58, 14.51s/it][A
+Evaluating:  75%|███████▌  | 9/12 [02:10<00:42, 14.18s/it][A
+Evaluating:  83%|████████▎ | 10/12 [02:24<00:28, 14.07s/it][A
+Evaluating:  92%|█████████▏| 11/12 [02:39<00:14, 14.34s/it][A
+Evaluating: 100%|██████████| 12/12 [02:53<00:00, 14.25s/it][A
+                                                           [A--- SH Iteration 2 | Target Budget: 18 Epochs | Active Models: 4
+
+Evaluating:   0%|          | 0/4 [00:00<?, ?it/s][A
+Evaluating:  25%|██▌       | 1/4 [00:29<01:28, 29.58s/it][A
+Evaluating:  50%|█████     | 2/4 [00:58<00:57, 29.00s/it][A
+Evaluating:  75%|███████▌  | 3/4 [01:25<00:28, 28.31s/it][A
+Evaluating: 100%|██████████| 4/4 [01:55<00:00, 28.78s/it][A
+                                                         [AHyperband iter: 2it [10:31, 313.62s/it]time remaining before zero shot filter: ~49m,27s
+Zero-Shot Filter: 868/1000 candidates kept. 132 rejected/removed. Training top 6.
+Rejected candidates by reason: {'too_few_conv_edges': 31, 'too_many_none_edges': 5, 'low_synflow_tail': 96}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.8879 | naswot=1.3613e+02 | synflow=3.5379e+08 | Params=34185 | FLOPs=21171200
+  #2: final=0.8610 | naswot=1.3412e+02 | synflow=6.0443e+07 | Params=23793 | FLOPs=14585600
+  #3: final=0.8356 | naswot=1.3172e+02 | synflow=4.9949e+09 | Params=37553 | FLOPs=23315200
+  #4: final=0.8350 | naswot=1.3261e+02 | synflow=5.6494e+07 | Params=18521 | FLOPs=11276800
+  #5: final=0.8329 | naswot=1.3270e+02 | synflow=2.7447e+08 | Params=20865 | FLOPs=12742400
+time remaining after zero shot filter: ~49m,13s
+--- SH Iteration 1 | Target Budget: 17 Epochs | Active Models: 6
+
+Evaluating:   0%|          | 0/6 [00:00<?, ?it/s][A
+Evaluating:  17%|█▋        | 1/6 [00:43<03:38, 43.69s/it][A
+Evaluating:  33%|███▎      | 2/6 [01:25<02:50, 42.65s/it][A
+Evaluating:  50%|█████     | 3/6 [02:06<02:05, 41.88s/it][A
+Evaluating:  67%|██████▋   | 4/6 [02:47<01:23, 41.67s/it][A
+Evaluating:  83%|████████▎ | 5/6 [03:29<00:41, 41.58s/it][A
+Evaluating: 100%|██████████| 6/6 [04:13<00:00, 42.46s/it][A
+                                                         [AHyperband iter: 3it [14:59, 292.57s/it]time remaining before zero shot filter: ~45m,0s
+Zero-Shot Filter: 868/1000 candidates kept. 132 rejected/removed. Training top 4.
+Rejected candidates by reason: {'too_few_conv_edges': 30, 'too_many_none_edges': 6, 'low_synflow_tail': 96}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.0268 | naswot=1.3074e+02 | synflow=1.3418e+10 | Params=48377 | FLOPs=30246400
+  #2: final=0.8972 | naswot=1.3468e+02 | synflow=2.0071e+08 | Params=39153 | FLOPs=24416000
+  #3: final=0.8792 | naswot=1.3260e+02 | synflow=1.8655e+07 | Params=20281 | FLOPs=12364800
+  #4: final=0.8417 | naswot=1.3223e+02 | synflow=1.3838e+09 | Params=38137 | FLOPs=23692800
+  #5: final=0.8346 | naswot=1.2907e+02 | synflow=4.5374e+09 | Params=27745 | FLOPs=17107200
+time remaining after zero shot filter: ~44m,46s
+--- SH Iteration 1 | Target Budget: 50 Epochs | Active Models: 4
+
+Evaluating:   0%|          | 0/4 [00:00<?, ?it/s][A
+Evaluating:  25%|██▌       | 1/4 [02:06<06:18, 126.22s/it][A
+Evaluating:  50%|█████     | 2/4 [04:05<04:04, 122.15s/it][A
+Evaluating:  75%|███████▌  | 3/4 [06:01<01:59, 119.55s/it][A
+Evaluating: 100%|██████████| 4/4 [08:04<00:00, 120.86s/it][A
+                                                          [AHyperband iter: 4it [23:18, 374.00s/it]Hyperband iter: 4it [23:18, 349.57s/it]
+🏆 ALL-TIME BEST UPDATED: 62.25%
+
+============================================================
+🚀 Starting Hyperband Pass 2 | Time remaining for Search: 24m,41s
+============================================================
+
+============================================================
+Starting Hyperband Search...
+============================================================
+Hyperband iter: 0it [00:00, ?it/s]time remaining before zero shot filter: ~36m,40s
+Zero-Shot Filter: 861/1000 candidates kept. 139 rejected/removed. Training top 27.
+Rejected candidates by reason: {'too_few_conv_edges': 39, 'too_many_none_edges': 5, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9181 | naswot=1.3591e+02 | synflow=3.2249e+08 | Params=26137 | FLOPs=16051200
+  #2: final=0.8882 | naswot=1.2906e+02 | synflow=6.4850e+09 | Params=35793 | FLOPs=22227200
+  #3: final=0.8645 | naswot=1.2825e+02 | synflow=5.6961e+09 | Params=29353 | FLOPs=18163200
+  #4: final=0.8578 | naswot=1.3197e+02 | synflow=6.4119e+06 | Params=10473 | FLOPs=6156800
+  #5: final=0.8511 | naswot=1.2676e+02 | synflow=8.5748e+09 | Params=45449 | FLOPs=28403200
+time remaining after zero shot filter: ~36m,27s
+--- SH Iteration 1 | Target Budget: 2 Epochs | Active Models: 27
+
+Evaluating:   0%|          | 0/27 [00:00<?, ?it/s][A
+Evaluating:   4%|▎         | 1/27 [00:05<02:16,  5.26s/it][A
+Evaluating:   7%|▋         | 2/27 [00:10<02:12,  5.31s/it][A
+Evaluating:  11%|█         | 3/27 [00:15<02:02,  5.08s/it][A
+Evaluating:  15%|█▍        | 4/27 [00:20<01:55,  5.03s/it][A
+Evaluating:  19%|█▊        | 5/27 [00:25<01:53,  5.16s/it][A
+Evaluating:  22%|██▏       | 6/27 [00:31<01:51,  5.30s/it][A
+Evaluating:  26%|██▌       | 7/27 [00:36<01:46,  5.32s/it][A
+Evaluating:  30%|██▉       | 8/27 [00:41<01:40,  5.30s/it][A
+Evaluating:  33%|███▎      | 9/27 [00:47<01:35,  5.31s/it][A
+Evaluating:  37%|███▋      | 10/27 [00:52<01:27,  5.15s/it][A
+Evaluating:  41%|████      | 11/27 [00:57<01:21,  5.12s/it][A
+Evaluating:  44%|████▍     | 12/27 [01:02<01:17,  5.14s/it][A
+Evaluating:  48%|████▊     | 13/27 [01:07<01:12,  5.16s/it][A
+Evaluating:  52%|█████▏    | 14/27 [01:12<01:06,  5.14s/it][A
+Evaluating:  56%|█████▌    | 15/27 [01:17<01:00,  5.04s/it][A
+Evaluating:  59%|█████▉    | 16/27 [01:22<00:54,  4.91s/it][A
+Evaluating:  63%|██████▎   | 17/27 [01:27<00:50,  5.04s/it][A
+Evaluating:  67%|██████▋   | 18/27 [01:32<00:45,  5.04s/it][A
+Evaluating:  70%|███████   | 19/27 [01:37<00:40,  5.00s/it][A
+Evaluating:  74%|███████▍  | 20/27 [01:42<00:35,  5.04s/it][A
+Evaluating:  78%|███████▊  | 21/27 [01:46<00:29,  4.88s/it][A
+Evaluating:  81%|████████▏ | 22/27 [01:52<00:24,  4.99s/it][A
+Evaluating:  85%|████████▌ | 23/27 [01:57<00:19,  5.00s/it][A
+Evaluating:  89%|████████▉ | 24/27 [02:02<00:15,  5.02s/it][A
+Evaluating:  93%|█████████▎| 25/27 [02:07<00:10,  5.06s/it][A
+Evaluating:  96%|█████████▋| 26/27 [02:12<00:05,  5.05s/it][A
+Evaluating: 100%|██████████| 27/27 [02:17<00:00,  4.99s/it][A
+                                                           [A--- SH Iteration 2 | Target Budget: 6 Epochs | Active Models: 9
+
+Evaluating:   0%|          | 0/9 [00:00<?, ?it/s][A
+Evaluating:  11%|█         | 1/9 [00:10<01:25, 10.69s/it][A
+Evaluating:  22%|██▏       | 2/9 [00:20<01:11, 10.21s/it][A
+Evaluating:  33%|███▎      | 3/9 [00:30<01:01, 10.30s/it][A
+Evaluating:  44%|████▍     | 4/9 [00:40<00:50, 10.02s/it][A
+Evaluating:  56%|█████▌    | 5/9 [00:50<00:40, 10.14s/it][A
+Evaluating:  67%|██████▋   | 6/9 [01:00<00:29,  9.92s/it][A
+Evaluating:  78%|███████▊  | 7/9 [01:09<00:19,  9.70s/it][A
+Evaluating:  89%|████████▉ | 8/9 [01:19<00:09,  9.81s/it][A
+Evaluating: 100%|██████████| 9/9 [01:29<00:00,  9.93s/it][A
+                                                         [A--- SH Iteration 3 | Target Budget: 18 Epochs | Active Models: 3
+
+Evaluating:   0%|          | 0/3 [00:00<?, ?it/s][A
+Evaluating:  33%|███▎      | 1/3 [00:30<01:01, 30.62s/it][A
+Evaluating:  67%|██████▋   | 2/3 [00:57<00:28, 28.62s/it][A
+Evaluating: 100%|██████████| 3/3 [01:25<00:00, 28.40s/it][A
+                                                         [AHyperband iter: 1it [05:26, 326.90s/it]time remaining before zero shot filter: ~31m,13s
+Zero-Shot Filter: 858/1000 candidates kept. 142 rejected/removed. Training top 12.
+Rejected candidates by reason: {'too_few_conv_edges': 42, 'too_many_none_edges': 5, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.1167 | naswot=1.3197e+02 | synflow=4.7420e+09 | Params=30673 | FLOPs=18950400
+  #2: final=0.9142 | naswot=1.3233e+02 | synflow=6.4287e+08 | Params=20281 | FLOPs=12364800
+  #3: final=0.9019 | naswot=1.3188e+02 | synflow=2.6805e+07 | Params=11057 | FLOPs=6534400
+  #4: final=0.8627 | naswot=1.3217e+02 | synflow=1.1903e+09 | Params=38721 | FLOPs=24070400
+  #5: final=0.8614 | naswot=1.3177e+02 | synflow=2.8165e+08 | Params=23209 | FLOPs=14208000
+time remaining after zero shot filter: ~31m,0s
+--- SH Iteration 1 | Target Budget: 6 Epochs | Active Models: 12
+
+Evaluating:   0%|          | 0/12 [00:00<?, ?it/s][A
+Evaluating:   8%|▊         | 1/12 [00:14<02:43, 14.87s/it][A
+Evaluating:  17%|█▋        | 2/12 [00:29<02:25, 14.56s/it][A
+Evaluating:  25%|██▌       | 3/12 [00:43<02:11, 14.61s/it][A
+Evaluating:  33%|███▎      | 4/12 [00:59<01:59, 14.98s/it][A
+Evaluating:  42%|████▏     | 5/12 [01:14<01:44, 14.92s/it][A
+Evaluating:  50%|█████     | 6/12 [01:29<01:30, 15.02s/it][A
+Evaluating:  58%|█████▊    | 7/12 [01:44<01:15, 15.13s/it][A
+Evaluating:  67%|██████▋   | 8/12 [01:59<00:59, 14.84s/it][A
+Evaluating:  75%|███████▌  | 9/12 [02:13<00:43, 14.61s/it][A
+Evaluating:  83%|████████▎ | 10/12 [02:27<00:29, 14.51s/it][A
+Evaluating:  92%|█████████▏| 11/12 [02:41<00:14, 14.47s/it][A
+Evaluating: 100%|██████████| 12/12 [02:56<00:00, 14.42s/it][A
+                                                           [A--- SH Iteration 2 | Target Budget: 18 Epochs | Active Models: 4
+
+Evaluating:   0%|          | 0/4 [00:00<?, ?it/s][A
+Evaluating:  25%|██▌       | 1/4 [00:29<01:29, 29.93s/it][A
+Evaluating:  50%|█████     | 2/4 [01:00<01:00, 30.19s/it][A
+Evaluating:  75%|███████▌  | 3/4 [01:28<00:29, 29.14s/it][A
+Evaluating: 100%|██████████| 4/4 [01:57<00:00, 29.13s/it][A
+                                                         [AHyperband iter: 2it [10:34, 315.29s/it]time remaining before zero shot filter: ~26m,6s
+Zero-Shot Filter: 861/1000 candidates kept. 139 rejected/removed. Training top 6.
+Rejected candidates by reason: {'too_few_conv_edges': 38, 'too_many_none_edges': 6, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9613 | naswot=1.2744e+02 | synflow=7.8085e+09 | Params=42673 | FLOPs=26592000
+  #2: final=0.9228 | naswot=1.2983e+02 | synflow=4.8685e+09 | Params=43257 | FLOPs=26969600
+  #3: final=0.9111 | naswot=1.3319e+02 | synflow=1.7919e+08 | Params=28329 | FLOPs=17484800
+  #4: final=0.8890 | naswot=1.3116e+02 | synflow=7.5219e+08 | Params=23057 | FLOPs=14176000
+  #5: final=0.8791 | naswot=1.3110e+02 | synflow=5.8478e+06 | Params=17937 | FLOPs=10899200
+time remaining after zero shot filter: ~25m,53s
+--- SH Iteration 1 | Target Budget: 17 Epochs | Active Models: 6
+
+Evaluating:   0%|          | 0/6 [00:00<?, ?it/s][A
+Evaluating:  17%|█▋        | 1/6 [00:42<03:30, 42.07s/it][A
+Evaluating:  33%|███▎      | 2/6 [01:24<02:49, 42.42s/it][A
+Evaluating:  50%|█████     | 3/6 [02:06<02:05, 41.94s/it][A
+Evaluating:  67%|██████▋   | 4/6 [02:46<01:22, 41.42s/it][A
+Evaluating:  83%|████████▎ | 5/6 [03:26<00:40, 40.81s/it][A
+Evaluating: 100%|██████████| 6/6 [04:07<00:00, 40.89s/it][A
+                                                         [AHyperband iter: 3it [14:55, 290.56s/it]time remaining before zero shot filter: ~21m,45s
+Zero-Shot Filter: 866/1000 candidates kept. 134 rejected/removed. Training top 4.
+Rejected candidates by reason: {'too_few_conv_edges': 25, 'too_many_none_edges': 13, 'low_synflow_tail': 96}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.0662 | naswot=1.3291e+02 | synflow=9.3549e+09 | Params=43257 | FLOPs=26969600
+  #2: final=0.9537 | naswot=1.2956e+02 | synflow=1.0726e+10 | Params=55841 | FLOPs=34988800
+  #3: final=0.8900 | naswot=1.3247e+02 | synflow=1.1311e+06 | Params=17937 | FLOPs=10899200
+  #4: final=0.8766 | naswot=1.3438e+02 | synflow=6.2844e+06 | Params=36225 | FLOPs=22572800
+  #5: final=0.8747 | naswot=1.3100e+02 | synflow=8.3425e+06 | Params=10473 | FLOPs=6156800
+time remaining after zero shot filter: ~21m,31s
+--- SH Iteration 1 | Target Budget: 50 Epochs | Active Models: 4
+
+Evaluating:   0%|          | 0/4 [00:00<?, ?it/s][A
+Evaluating:  25%|██▌       | 1/4 [02:04<06:13, 124.37s/it][A
+Evaluating:  50%|█████     | 2/4 [04:14<04:15, 127.68s/it][A
+Evaluating:  75%|███████▌  | 3/4 [06:02<01:58, 118.86s/it][A
+Evaluating: 100%|██████████| 4/4 [08:06<00:00, 120.89s/it][A
+                                                          [AHyperband iter: 4it [23:15, 373.44s/it]Hyperband iter: 4it [23:15, 348.92s/it]
+
+============================================================
+🚀 Starting Hyperband Pass 3 | Time remaining for Search: 1m,25s
+============================================================
+
+============================================================
+Starting Hyperband Search...
+============================================================
+Hyperband iter: 0it [00:00, ?it/s]time remaining before zero shot filter: ~13m,24s
+Zero-Shot Filter: 856/1000 candidates kept. 144 rejected/removed. Training top 27.
+Rejected candidates by reason: {'too_many_none_edges': 13, 'too_few_conv_edges': 36, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.0501 | naswot=1.3181e+02 | synflow=1.0253e+10 | Params=40913 | FLOPs=25504000
+  #2: final=0.9633 | naswot=1.3420e+02 | synflow=5.4898e+09 | Params=46185 | FLOPs=28812800
+  #3: final=0.9535 | naswot=1.3055e+02 | synflow=7.2404e+09 | Params=33449 | FLOPs=20761600
+  #4: final=0.9014 | naswot=1.3456e+02 | synflow=6.0534e+08 | Params=29065 | FLOPs=17894400
+  #5: final=0.8896 | naswot=1.3399e+02 | synflow=3.8860e+08 | Params=26137 | FLOPs=16051200
+time remaining after zero shot filter: ~13m,10s
+--- SH Iteration 1 | Target Budget: 2 Epochs | Active Models: 27
+
+Evaluating:   0%|          | 0/27 [00:00<?, ?it/s][A
+Evaluating:   4%|▎         | 1/27 [00:05<02:20,  5.42s/it][A
+Evaluating:   7%|▋         | 2/27 [00:10<02:16,  5.48s/it][A
+Evaluating:  11%|█         | 3/27 [00:16<02:09,  5.38s/it][A
+Evaluating:  15%|█▍        | 4/27 [00:21<02:04,  5.41s/it][A
+Evaluating:  19%|█▊        | 5/27 [00:26<01:57,  5.36s/it][A
+Evaluating:  22%|██▏       | 6/27 [00:32<01:51,  5.32s/it][A
+Evaluating:  26%|██▌       | 7/27 [00:37<01:45,  5.27s/it][A
+Evaluating:  30%|██▉       | 8/27 [00:42<01:39,  5.25s/it][A
+Evaluating:  33%|███▎      | 9/27 [00:47<01:34,  5.28s/it][A
+Evaluating:  37%|███▋      | 10/27 [00:52<01:28,  5.22s/it][A
+Evaluating:  41%|████      | 11/27 [00:58<01:23,  5.23s/it][A
+Evaluating:  44%|████▍     | 12/27 [01:03<01:17,  5.14s/it][A
+Evaluating:  48%|████▊     | 13/27 [01:08<01:11,  5.10s/it][A
+Evaluating:  52%|█████▏    | 14/27 [01:13<01:05,  5.03s/it][A
+                                                           [AHyperband iter: 0it [01:26, ?it/s]
+⚠️ Search time limit 80% reached! Halting SH bracket early to save time for training.
+
+⚠️ Hyperband iteration halting immediately to respect search time limit.
+
+🛑 Search Phase Complete! Executed 3 full Hyperband passes.
+
+=== Training ===
+  Allotted compute time remaining: ~11m,57s
+	Epoch   1 | Train Acc:  86.61% | Valid Acc:  92.86% | T/Epoch: 3.73s   |
+	Epoch   2 | Train Acc:  89.15% | Valid Acc:  60.39% | T/Epoch: 2.77s   |
+	Epoch   3 | Train Acc:  87.32% | Valid Acc:  92.77% | T/Epoch: 2.75s   |
+	Epoch   4 | Train Acc:  89.11% | Valid Acc:  81.73% | T/Epoch: 2.71s   |
+	Epoch   5 | Train Acc:  90.71% | Valid Acc:  95.69% | T/Epoch: 2.75s   |
+	Epoch   6 | Train Acc:  89.13% | Valid Acc:  94.89% | T/Epoch: 2.75s   |
+	Epoch   7 | Train Acc:  92.37% | Valid Acc:  92.70% | T/Epoch: 2.74s   |
+	Epoch   8 | Train Acc:  90.89% | Valid Acc:  97.75% | T/Epoch: 2.75s   |
+	Epoch   9 | Train Acc:  91.98% | Valid Acc:  92.88% | T/Epoch: 2.74s   |
+	Epoch  10 | Train Acc:  90.37% | Valid Acc:  93.81% | T/Epoch: 2.74s   |
+	Epoch  11 | Train Acc:  89.95% | Valid Acc:  96.71% | T/Epoch: 2.69s   |
+	Epoch  12 | Train Acc:  91.85% | Valid Acc:  97.17% | T/Epoch: 2.74s   |
+	Epoch  13 | Train Acc:  91.65% | Valid Acc:  97.96% | T/Epoch: 2.74s   |
+	Epoch  14 | Train Acc:  92.96% | Valid Acc:  97.88% | T/Epoch: 2.74s   |
+	Epoch  15 | Train Acc:  91.92% | Valid Acc:  96.41% | T/Epoch: 2.74s   |
+	Epoch  16 | Train Acc:  93.54% | Valid Acc:  96.77% | T/Epoch: 2.74s   |
+	Epoch  17 | Train Acc:  92.05% | Valid Acc:  96.86% | T/Epoch: 2.74s   |
+	Epoch  18 | Train Acc:  91.33% | Valid Acc:  97.75% | T/Epoch: 2.69s   |
+	Epoch  19 | Train Acc:  91.89% | Valid Acc:  98.59% | T/Epoch: 2.74s   |
+	Epoch  20 | Train Acc:  91.35% | Valid Acc:  96.71% | T/Epoch: 2.73s   |
+	Epoch  21 | Train Acc:  92.36% | Valid Acc:  97.02% | T/Epoch: 2.74s   |
+	Epoch  22 | Train Acc:  91.94% | Valid Acc:  97.25% | T/Epoch: 2.74s   |
+	Epoch  23 | Train Acc:  92.32% | Valid Acc:  98.42% | T/Epoch: 2.74s   |
+	Epoch  24 | Train Acc:  92.81% | Valid Acc:  98.39% | T/Epoch: 2.74s   |
+	Epoch  25 | Train Acc:  92.29% | Valid Acc:  98.37% | T/Epoch: 2.69s   |
+	Epoch  26 | Train Acc:  92.61% | Valid Acc:  97.71% | T/Epoch: 2.74s   |
+	Epoch  27 | Train Acc:  91.32% | Valid Acc:  98.13% | T/Epoch: 2.74s   |
+	Epoch  28 | Train Acc:  92.88% | Valid Acc:  98.55% | T/Epoch: 2.74s   |
+	Epoch  29 | Train Acc:  91.51% | Valid Acc:  98.25% | T/Epoch: 2.75s   |
+	Epoch  30 | Train Acc:  91.86% | Valid Acc:  98.42% | T/Epoch: 2.74s   |
+	Epoch  31 | Train Acc:  91.72% | Valid Acc:  98.34% | T/Epoch: 2.75s   |
+	Epoch  32 | Train Acc:  92.14% | Valid Acc:  98.46% | T/Epoch: 2.70s   |
+	Epoch  33 | Train Acc:  92.47% | Valid Acc:  98.28% | T/Epoch: 2.74s   |
+	Epoch  34 | Train Acc:  91.28% | Valid Acc:  98.62% | T/Epoch: 2.74s   |
+	Epoch  35 | Train Acc:  92.99% | Valid Acc:  98.34% | T/Epoch: 2.75s   |
+	Epoch  36 | Train Acc:  91.71% | Valid Acc:  98.43% | T/Epoch: 2.75s   |
+	Epoch  37 | Train Acc:  93.89% | Valid Acc:  98.54% | T/Epoch: 2.75s   |
+	Epoch  38 | Train Acc:  92.68% | Valid Acc:  98.14% | T/Epoch: 2.75s   |
+	Epoch  39 | Train Acc:  93.56% | Valid Acc:  98.05% | T/Epoch: 2.70s   |
+	Epoch  40 | Train Acc:  92.42% | Valid Acc:  98.26% | T/Epoch: 2.74s   |
+	Epoch  41 | Train Acc:  93.02% | Valid Acc:  98.53% | T/Epoch: 2.74s   |
+	Epoch  42 | Train Acc:  91.56% | Valid Acc:  98.43% | T/Epoch: 2.74s   |
+	Epoch  43 | Train Acc:  92.17% | Valid Acc:  98.39% | T/Epoch: 2.74s   |
+	Epoch  44 | Train Acc:  91.80% | Valid Acc:  98.50% | T/Epoch: 2.74s   |
+	Epoch  45 | Train Acc:  91.63% | Valid Acc:  98.59% | T/Epoch: 2.74s   |
+	Epoch  46 | Train Acc:  92.48% | Valid Acc:  98.07% | T/Epoch: 2.69s   |
+	Epoch  47 | Train Acc:  91.58% | Valid Acc:  98.50% | T/Epoch: 2.74s   |
+	Epoch  48 | Train Acc:  92.33% | Valid Acc:  97.52% | T/Epoch: 2.75s   |
+	Epoch  49 | Train Acc:  93.40% | Valid Acc:  98.55% | T/Epoch: 2.75s   |
+	Epoch  50 | Train Acc:  93.29% | Valid Acc:  98.25% | T/Epoch: 2.75s   |
+	Epoch  51 | Train Acc:  91.35% | Valid Acc:  98.33% | T/Epoch: 2.74s   |
+	Epoch  52 | Train Acc:  93.34% | Valid Acc:  98.52% | T/Epoch: 2.71s   |
+	Epoch  53 | Train Acc:  89.57% | Valid Acc:  98.63% | T/Epoch: 2.73s   |
+	Epoch  54 | Train Acc:  91.72% | Valid Acc:  98.26% | T/Epoch: 2.74s   |
+	Epoch  55 | Train Acc:  91.82% | Valid Acc:  98.56% | T/Epoch: 2.74s   |
+	Epoch  56 | Train Acc:  92.31% | Valid Acc:  98.50% | T/Epoch: 2.75s   |
+	Epoch  57 | Train Acc:  91.92% | Valid Acc:  98.41% | T/Epoch: 2.75s   |
+	Epoch  58 | Train Acc:  93.35% | Valid Acc:  98.31% | T/Epoch: 2.75s   |
+	Epoch  59 | Train Acc:  93.00% | Valid Acc:  98.57% | T/Epoch: 2.70s   |
+	Epoch  60 | Train Acc:  91.56% | Valid Acc:  98.22% | T/Epoch: 2.74s   |
+	Epoch  61 | Train Acc:  92.67% | Valid Acc:  98.35% | T/Epoch: 2.75s   |
+	Epoch  62 | Train Acc:  92.77% | Valid Acc:  98.63% | T/Epoch: 2.75s   |
+	Epoch  63 | Train Acc:  91.24% | Valid Acc:  97.99% | T/Epoch: 2.75s   |
+	Epoch  64 | Train Acc:  92.11% | Valid Acc:  98.38% | T/Epoch: 2.74s   |
+	Epoch  65 | Train Acc:  88.48% | Valid Acc:  98.29% | T/Epoch: 2.75s   |
+	Epoch  66 | Train Acc:  92.60% | Valid Acc:  98.52% | T/Epoch: 2.70s   |
+	Epoch  67 | Train Acc:  89.81% | Valid Acc:  97.75% | T/Epoch: 2.74s   |
+	Epoch  68 | Train Acc:  92.72% | Valid Acc:  98.58% | T/Epoch: 2.75s   |
+	Epoch  69 | Train Acc:  91.22% | Valid Acc:  98.01% | T/Epoch: 2.75s   |
+	Epoch  70 | Train Acc:  92.16% | Valid Acc:  98.57% | T/Epoch: 2.75s   |
+	Epoch  71 | Train Acc:  91.52% | Valid Acc:  98.55% | T/Epoch: 2.75s   |
+	Epoch  72 | Train Acc:  91.96% | Valid Acc:  98.49% | T/Epoch: 2.75s   |
+	Epoch  73 | Train Acc:  92.81% | Valid Acc:  98.61% | T/Epoch: 2.70s   |
+	Epoch  74 | Train Acc:  93.10% | Valid Acc:  98.34% | T/Epoch: 2.75s   |
+	Epoch  75 | Train Acc:  92.52% | Valid Acc:  98.59% | T/Epoch: 2.75s   |
+	Epoch  76 | Train Acc:  93.25% | Valid Acc:  98.53% | T/Epoch: 2.75s   |
+	Epoch  77 | Train Acc:  90.89% | Valid Acc:  98.29% | T/Epoch: 2.75s   |
+	Epoch  78 | Train Acc:  92.33% | Valid Acc:  98.17% | T/Epoch: 2.75s   |
+	Epoch  79 | Train Acc:  92.15% | Valid Acc:  98.42% | T/Epoch: 2.74s   |
+	Epoch  80 | Train Acc:  92.23% | Valid Acc:  98.41% | T/Epoch: 2.69s   |
+	Epoch  81 | Train Acc:  91.48% | Valid Acc:  98.45% | T/Epoch: 2.75s   |
+	Epoch  82 | Train Acc:  92.22% | Valid Acc:  98.21% | T/Epoch: 2.75s   |
+	Epoch  83 | Train Acc:  92.60% | Valid Acc:  97.98% | T/Epoch: 2.76s   |
+	Epoch  84 | Train Acc:  91.13% | Valid Acc:  98.21% | T/Epoch: 2.75s   |
+	Epoch  85 | Train Acc:  93.15% | Valid Acc:  98.59% | T/Epoch: 2.74s   |
+	Epoch  86 | Train Acc:  92.84% | Valid Acc:  98.61% | T/Epoch: 2.74s   |
+	Epoch  87 | Train Acc:  92.13% | Valid Acc:  98.19% | T/Epoch: 2.70s   |
+	Epoch  88 | Train Acc:  92.71% | Valid Acc:  98.36% | T/Epoch: 2.75s   |
+	Epoch  89 | Train Acc:  93.08% | Valid Acc:  98.58% | T/Epoch: 2.75s   |
+	Epoch  90 | Train Acc:  92.76% | Valid Acc:  98.52% | T/Epoch: 2.75s   |
+	Epoch  91 | Train Acc:  91.39% | Valid Acc:  98.61% | T/Epoch: 2.75s   |
+	Epoch  92 | Train Acc:  93.33% | Valid Acc:  98.42% | T/Epoch: 2.75s   |
+	Epoch  93 | Train Acc:  91.12% | Valid Acc:  98.43% | T/Epoch: 2.75s   |
+	Epoch  94 | Train Acc:  91.42% | Valid Acc:  98.56% | T/Epoch: 2.70s   |
+	Epoch  95 | Train Acc:  92.49% | Valid Acc:  98.35% | T/Epoch: 2.75s   |
+	Epoch  96 | Train Acc:  89.83% | Valid Acc:  98.18% | T/Epoch: 2.75s   |
+	Epoch  97 | Train Acc:  92.60% | Valid Acc:  98.42% | T/Epoch: 2.75s   |
+	Epoch  98 | Train Acc:  93.73% | Valid Acc:  98.29% | T/Epoch: 2.75s   |
+	Epoch  99 | Train Acc:  93.51% | Valid Acc:  98.27% | T/Epoch: 2.75s   |
+	Epoch 100 | Train Acc:  92.61% | Valid Acc:  98.45% | T/Epoch: 2.75s   |
+	Epoch 101 | Train Acc:  92.67% | Valid Acc:  98.52% | T/Epoch: 2.70s   |
+	Epoch 102 | Train Acc:  91.68% | Valid Acc:  98.65% | T/Epoch: 2.75s   |
+	Epoch 103 | Train Acc:  93.63% | Valid Acc:  98.44% | T/Epoch: 2.74s   |
+	Epoch 104 | Train Acc:  90.92% | Valid Acc:  98.39% | T/Epoch: 2.74s   |
+	Epoch 105 | Train Acc:  91.75% | Valid Acc:  98.49% | T/Epoch: 2.75s   |
+	Epoch 106 | Train Acc:  91.20% | Valid Acc:  98.64% | T/Epoch: 2.75s   |
+	Epoch 107 | Train Acc:  93.12% | Valid Acc:  98.37% | T/Epoch: 2.75s   |
+	Epoch 108 | Train Acc:  91.81% | Valid Acc:  98.54% | T/Epoch: 2.70s   |
+	Epoch 109 | Train Acc:  91.11% | Valid Acc:  98.49% | T/Epoch: 2.75s   |
+	Epoch 110 | Train Acc:  92.39% | Valid Acc:  98.56% | T/Epoch: 2.74s   |
+	Epoch 111 | Train Acc:  92.32% | Valid Acc:  98.29% | T/Epoch: 2.75s   |
+	Epoch 112 | Train Acc:  93.19% | Valid Acc:  98.55% | T/Epoch: 2.75s   |
+	Epoch 113 | Train Acc:  92.22% | Valid Acc:  98.61% | T/Epoch: 2.75s   |
+	Epoch 114 | Train Acc:  89.81% | Valid Acc:  98.46% | T/Epoch: 2.75s   |
+	Epoch 115 | Train Acc:  92.48% | Valid Acc:  98.31% | T/Epoch: 2.70s   |
+	Epoch 116 | Train Acc:  92.31% | Valid Acc:  98.64% | T/Epoch: 2.75s   |
+	Epoch 117 | Train Acc:  93.01% | Valid Acc:  98.62% | T/Epoch: 2.76s   |
+	Epoch 118 | Train Acc:  91.71% | Valid Acc:  98.05% | T/Epoch: 2.75s   |
+	Epoch 119 | Train Acc:  92.20% | Valid Acc:  98.58% | T/Epoch: 2.75s   |
+	Epoch 120 | Train Acc:  93.24% | Valid Acc:  98.31% | T/Epoch: 2.75s   |
+	Epoch 121 | Train Acc:  91.47% | Valid Acc:  98.55% | T/Epoch: 2.71s   |
+	Epoch 122 | Train Acc:  89.69% | Valid Acc:  98.62% | T/Epoch: 2.74s   |
+	Epoch 123 | Train Acc:  90.80% | Valid Acc:  98.52% | T/Epoch: 2.75s   |
+	Epoch 124 | Train Acc:  90.78% | Valid Acc:  98.57% | T/Epoch: 2.75s   |
+	Epoch 125 | Train Acc:  92.87% | Valid Acc:  98.46% | T/Epoch: 2.76s   |
+	Epoch 126 | Train Acc:  90.98% | Valid Acc:  98.58% | T/Epoch: 2.76s   |
+	Epoch 127 | Train Acc:  90.96% | Valid Acc:  98.30% | T/Epoch: 2.74s   |
+	Epoch 128 | Train Acc:  90.67% | Valid Acc:  98.30% | T/Epoch: 2.70s   |
+	Epoch 129 | Train Acc:  93.84% | Valid Acc:  98.40% | T/Epoch: 2.75s   |
+	Epoch 130 | Train Acc:  92.90% | Valid Acc:  98.51% | T/Epoch: 2.75s   |
+	Epoch 131 | Train Acc:  90.52% | Valid Acc:  98.61% | T/Epoch: 2.75s   |
+	Epoch 132 | Train Acc:  92.83% | Valid Acc:  98.61% | T/Epoch: 2.75s   |
+	Epoch 133 | Train Acc:  90.07% | Valid Acc:  98.61% | T/Epoch: 2.75s   |
+	Epoch 134 | Train Acc:  91.93% | Valid Acc:  98.62% | T/Epoch: 2.76s   |
+	Epoch 135 | Train Acc:  91.94% | Valid Acc:  98.58% | T/Epoch: 2.71s   |
+	Epoch 136 | Train Acc:  91.87% | Valid Acc:  98.68% | T/Epoch: 2.75s   |
+	Epoch 137 | Train Acc:  92.43% | Valid Acc:  98.55% | T/Epoch: 2.75s   |
+	Epoch 138 | Train Acc:  91.51% | Valid Acc:  98.37% | T/Epoch: 2.74s   |
+	Epoch 139 | Train Acc:  93.96% | Valid Acc:  98.58% | T/Epoch: 2.74s   |
+	Epoch 140 | Train Acc:  92.01% | Valid Acc:  98.48% | T/Epoch: 2.74s   |
+	Epoch 141 | Train Acc:  92.59% | Valid Acc:  98.49% | T/Epoch: 2.73s   |
+	Epoch 142 | Train Acc:  92.77% | Valid Acc:  98.43% | T/Epoch: 2.69s   |
+	Epoch 143 | Train Acc:  92.05% | Valid Acc:  98.18% | T/Epoch: 2.74s   |
+	Epoch 144 | Train Acc:  91.47% | Valid Acc:  98.39% | T/Epoch: 2.74s   |
+	Epoch 145 | Train Acc:  91.35% | Valid Acc:  98.47% | T/Epoch: 2.74s   |
+	Epoch 146 | Train Acc:  92.53% | Valid Acc:  98.30% | T/Epoch: 2.74s   |
+	Epoch 147 | Train Acc:  93.23% | Valid Acc:  98.51% | T/Epoch: 2.74s   |
+	Epoch 148 | Train Acc:  91.36% | Valid Acc:  98.46% | T/Epoch: 2.74s   |
+	Epoch 149 | Train Acc:  91.43% | Valid Acc:  98.55% | T/Epoch: 2.69s   |
+	Epoch 150 | Train Acc:  93.57% | Valid Acc:  98.13% | T/Epoch: 2.73s   |
+	Epoch 151 | Train Acc:  90.60% | Valid Acc:  98.19% | T/Epoch: 2.74s   |
+	Epoch 152 | Train Acc:  93.09% | Valid Acc:  98.52% | T/Epoch: 2.74s   |
+	Epoch 153 | Train Acc:  94.17% | Valid Acc:  98.16% | T/Epoch: 2.74s   |
+	Epoch 154 | Train Acc:  90.93% | Valid Acc:  98.20% | T/Epoch: 2.74s   |
+	Epoch 155 | Train Acc:  92.71% | Valid Acc:  98.35% | T/Epoch: 2.74s   |
+	Epoch 156 | Train Acc:  92.01% | Valid Acc:  98.59% | T/Epoch: 2.69s   |
+	Epoch 157 | Train Acc:  92.07% | Valid Acc:  98.51% | T/Epoch: 2.74s   |
+	Epoch 158 | Train Acc:  93.63% | Valid Acc:  98.33% | T/Epoch: 2.73s   |
+	Epoch 159 | Train Acc:  92.66% | Valid Acc:  98.30% | T/Epoch: 2.74s   |
+	Epoch 160 | Train Acc:  90.63% | Valid Acc:  98.44% | T/Epoch: 2.74s   |
+	Epoch 161 | Train Acc:  90.65% | Valid Acc:  98.14% | T/Epoch: 2.74s   |
+	Epoch 162 | Train Acc:  92.02% | Valid Acc:  98.55% | T/Epoch: 2.74s   |
+	Epoch 163 | Train Acc:  92.74% | Valid Acc:  98.53% | T/Epoch: 2.68s   |
+	Epoch 164 | Train Acc:  92.59% | Valid Acc:  98.56% | T/Epoch: 2.74s   |
+	Epoch 165 | Train Acc:  91.97% | Valid Acc:  98.51% | T/Epoch: 2.73s   |
+	Epoch 166 | Train Acc:  92.56% | Valid Acc:  98.54% | T/Epoch: 2.74s   |
+	Epoch 167 | Train Acc:  93.68% | Valid Acc:  98.15% | T/Epoch: 2.73s   |
+	Epoch 168 | Train Acc:  91.86% | Valid Acc:  98.59% | T/Epoch: 2.74s   |
+	Epoch 169 | Train Acc:  91.77% | Valid Acc:  98.49% | T/Epoch: 2.73s   |
+	Epoch 170 | Train Acc:  92.91% | Valid Acc:  98.60% | T/Epoch: 2.68s   |
+	Epoch 171 | Train Acc:  93.33% | Valid Acc:  98.36% | T/Epoch: 2.74s   |
+	Epoch 172 | Train Acc:  94.51% | Valid Acc:  98.29% | T/Epoch: 2.73s   |
+	Epoch 173 | Train Acc:  92.55% | Valid Acc:  98.58% | T/Epoch: 2.73s   |
+	Epoch 174 | Train Acc:  91.18% | Valid Acc:  98.10% | T/Epoch: 2.73s   |
+	Epoch 175 | Train Acc:  91.98% | Valid Acc:  98.48% | T/Epoch: 2.74s   |
+	Epoch 176 | Train Acc:  90.70% | Valid Acc:  98.55% | T/Epoch: 2.73s   |
+	Epoch 177 | Train Acc:  93.24% | Valid Acc:  98.46% | T/Epoch: 2.69s   |
+	Epoch 178 | Train Acc:  92.71% | Valid Acc:  98.53% | T/Epoch: 2.74s   |
+	Epoch 179 | Train Acc:  92.43% | Valid Acc:  98.51% | T/Epoch: 2.74s   |
+	Epoch 180 | Train Acc:  91.63% | Valid Acc:  98.60% | T/Epoch: 2.74s   |
+	Epoch 181 | Train Acc:  92.72% | Valid Acc:  98.55% | T/Epoch: 2.74s   |
+	Epoch 182 | Train Acc:  92.71% | Valid Acc:  98.64% | T/Epoch: 2.75s   |
+	Epoch 183 | Train Acc:  92.27% | Valid Acc:  98.19% | T/Epoch: 2.74s   |
+	Epoch 184 | Train Acc:  93.52% | Valid Acc:  97.99% | T/Epoch: 2.70s   |
+	Epoch 185 | Train Acc:  90.52% | Valid Acc:  98.45% | T/Epoch: 2.73s   |
+	Epoch 186 | Train Acc:  92.24% | Valid Acc:  98.56% | T/Epoch: 2.73s   |
+
+🛑 Early stopping triggered! Validation accuracy hasn't improved in 50 epochs. Preventing overfitting.
+  Total training runtime: 8m,30s
+  Restoring best model weights (Val Acc: 98.68%)
+
+=== Predicting ===
+  Allotted compute time remaining: ~3m,27s
+Run time for conway: 3393.1434644359997
+Model Training and Prediction Complete
+finished dataset: conway
+========== Dataset windspeed  =============================================
+  Metadata:
+   - num_classes         : 20
+   - input_shape         : [34822, 12, 32, 32]
+   - codename            : windspeed
+   - benchmark           : 13.492
+   - time_limit          : 1
+   - time_remaining      : 3598.612751327999
+
+=== Processing Data ===
+  Allotted compute time remaining: ~59m,58s
+🧮 VRAM: 11.38GB frei von 12.49GB | Geschätzte Batchgröße: 1024 (Bild: 12x32x32)
+
+=== Performing NAS ===
+  Allotted compute time remaining: ~59m,58s
+⏱️ Total Time: 59m,58s | Search Budget: 80% (47m,58s) | Train Budget: 15% (8m,59s)
+⏱️ Estimated time per epoch: 2.08 seconds
+⚙️ Dynamically set Hyperband max_budget_per_model to: 50 epochs
+
+============================================================
+🚀 Starting Hyperband Pass 1 | Time remaining for Search: 47m,58s
+============================================================
+
+============================================================
+Starting Hyperband Search...
+============================================================
+Hyperband iter: 0it [00:00, ?it/s]time remaining before zero shot filter: ~59m,57s
+Zero-Shot Filter: 856/1000 candidates kept. 144 rejected/removed. Training top 27.
+Rejected candidates by reason: {'too_few_conv_edges': 43, 'too_many_none_edges': 6, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9380 | naswot=1.5744e+02 | synflow=6.3899e+10 | Params=30796 | FLOPs=203101184
+  #2: final=0.9015 | naswot=1.6172e+02 | synflow=3.3315e+08 | Params=21420 | FLOPs=143070208
+  #3: final=0.8649 | naswot=1.6250e+02 | synflow=4.0835e+08 | Params=33572 | FLOPs=221647872
+  #4: final=0.8642 | naswot=1.6142e+02 | synflow=2.7129e+09 | Params=29036 | FLOPs=191960064
+  #5: final=0.8575 | naswot=1.5819e+02 | synflow=1.2265e+07 | Params=10012 | FLOPs=68228096
+time remaining after zero shot filter: ~59m,43s
+--- SH Iteration 1 | Target Budget: 2 Epochs | Active Models: 27
+
+Evaluating:   0%|          | 0/27 [00:00<?, ?it/s][A
+Evaluating:   4%|▎         | 1/27 [00:06<02:51,  6.61s/it][A
+Evaluating:   7%|▋         | 2/27 [00:12<02:40,  6.42s/it][A
+Evaluating:  11%|█         | 3/27 [00:19<02:40,  6.69s/it][A
+Evaluating:  15%|█▍        | 4/27 [00:26<02:34,  6.72s/it][A
+Evaluating:  19%|█▊        | 5/27 [00:31<02:11,  5.99s/it][A
+Evaluating:  22%|██▏       | 6/27 [00:36<02:01,  5.81s/it][A
+Evaluating:  26%|██▌       | 7/27 [00:42<01:57,  5.87s/it][A
+Evaluating:  30%|██▉       | 8/27 [00:49<01:58,  6.26s/it][A
+Evaluating:  33%|███▎      | 9/27 [00:55<01:47,  5.95s/it][A
+Evaluating:  37%|███▋      | 10/27 [01:00<01:40,  5.91s/it][A
+Evaluating:  41%|████      | 11/27 [01:06<01:31,  5.73s/it][A
+Evaluating:  44%|████▍     | 12/27 [01:12<01:29,  5.99s/it][A
+Evaluating:  48%|████▊     | 13/27 [01:20<01:31,  6.54s/it][A
+Evaluating:  52%|█████▏    | 14/27 [01:26<01:23,  6.45s/it][A
+Evaluating:  56%|█████▌    | 15/27 [01:33<01:19,  6.63s/it][A
+Evaluating:  59%|█████▉    | 16/27 [01:39<01:09,  6.32s/it][A
+Evaluating:  63%|██████▎   | 17/27 [01:47<01:06,  6.69s/it][A
+Evaluating:  67%|██████▋   | 18/27 [01:53<00:58,  6.52s/it][A
+Evaluating:  70%|███████   | 19/27 [01:58<00:49,  6.14s/it][A
+Evaluating:  74%|███████▍  | 20/27 [02:04<00:42,  6.04s/it][A
+Evaluating:  78%|███████▊  | 21/27 [02:12<00:39,  6.62s/it][A
+Evaluating:  81%|████████▏ | 22/27 [02:18<00:32,  6.53s/it][A
+Evaluating:  85%|████████▌ | 23/27 [02:24<00:25,  6.29s/it][A
+Evaluating:  89%|████████▉ | 24/27 [02:30<00:18,  6.33s/it][A
+Evaluating:  93%|█████████▎| 25/27 [02:36<00:12,  6.18s/it][A
+Evaluating:  96%|█████████▋| 26/27 [02:43<00:06,  6.49s/it][A
+Evaluating: 100%|██████████| 27/27 [02:49<00:00,  6.30s/it][A
+                                                           [A--- SH Iteration 2 | Target Budget: 6 Epochs | Active Models: 9
+
+Evaluating:   0%|          | 0/9 [00:00<?, ?it/s][A
+Evaluating:  11%|█         | 1/9 [00:15<02:01, 15.23s/it][A
+Evaluating:  22%|██▏       | 2/9 [00:24<01:20, 11.53s/it][A
+Evaluating:  33%|███▎      | 3/9 [00:34<01:06, 11.16s/it][A
+Evaluating:  44%|████▍     | 4/9 [00:46<00:57, 11.51s/it][A
+Evaluating:  56%|█████▌    | 5/9 [00:59<00:46, 11.74s/it][A
+Evaluating:  67%|██████▋   | 6/9 [01:09<00:33, 11.14s/it][A
+Evaluating:  78%|███████▊  | 7/9 [01:20<00:22, 11.14s/it][A
+Evaluating:  89%|████████▉ | 8/9 [01:35<00:12, 12.40s/it][A
+Evaluating: 100%|██████████| 9/9 [01:47<00:00, 12.23s/it][A
+                                                         [A--- SH Iteration 3 | Target Budget: 18 Epochs | Active Models: 3
+
+Evaluating:   0%|          | 0/3 [00:00<?, ?it/s][A
+Evaluating:  33%|███▎      | 1/3 [00:35<01:10, 35.14s/it][A
+Evaluating:  67%|██████▋   | 2/3 [01:09<00:34, 34.91s/it][A
+Evaluating: 100%|██████████| 3/3 [01:42<00:00, 33.88s/it][A
+                                                         [AHyperband iter: 1it [06:33, 393.08s/it]time remaining before zero shot filter: ~53m,24s
+Zero-Shot Filter: 862/1000 candidates kept. 138 rejected/removed. Training top 12.
+Rejected candidates by reason: {'too_few_conv_edges': 33, 'too_many_none_edges': 10, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9943 | naswot=1.6341e+02 | synflow=2.0229e+11 | Params=49668 | FLOPs=326505472
+  #2: final=0.9696 | naswot=1.5745e+02 | synflow=3.1990e+11 | Params=38108 | FLOPs=251335680
+  #3: final=0.9001 | naswot=1.6248e+02 | synflow=3.4470e+08 | Params=21420 | FLOPs=143070208
+  #4: final=0.8958 | naswot=1.6187e+02 | synflow=4.5513e+08 | Params=18212 | FLOPs=120984576
+  #5: final=0.8546 | naswot=1.6014e+02 | synflow=1.5251e+08 | Params=15284 | FLOPs=102110208
+time remaining after zero shot filter: ~53m,10s
+--- SH Iteration 1 | Target Budget: 6 Epochs | Active Models: 12
+
+Evaluating:   0%|          | 0/12 [00:00<?, ?it/s][A
+Evaluating:   8%|▊         | 1/12 [00:23<04:14, 23.11s/it][A
+Evaluating:  17%|█▋        | 2/12 [00:43<03:34, 21.48s/it][A
+Evaluating:  25%|██▌       | 3/12 [01:01<02:59, 19.94s/it][A
+Evaluating:  33%|███▎      | 4/12 [01:18<02:29, 18.63s/it][A
+Evaluating:  42%|████▏     | 5/12 [01:34<02:03, 17.64s/it][A
+Evaluating:  50%|█████     | 6/12 [01:49<01:41, 16.91s/it][A
+Evaluating:  58%|█████▊    | 7/12 [02:08<01:27, 17.49s/it][A
+Evaluating:  67%|██████▋   | 8/12 [02:24<01:08, 17.15s/it][A
+Evaluating:  75%|███████▌  | 9/12 [02:42<00:51, 17.23s/it][A
+Evaluating:  83%|████████▎ | 10/12 [02:58<00:33, 16.95s/it][A
+Evaluating:  92%|█████████▏| 11/12 [03:15<00:16, 16.93s/it][A
+Evaluating: 100%|██████████| 12/12 [03:34<00:00, 17.57s/it][A
+                                                           [A--- SH Iteration 2 | Target Budget: 18 Epochs | Active Models: 4
+
+Evaluating:   0%|          | 0/4 [00:00<?, ?it/s][A
+Evaluating:  25%|██▌       | 1/4 [00:34<01:42, 34.20s/it][A
+Evaluating:  50%|█████     | 2/4 [01:07<01:07, 33.61s/it][A
+Evaluating:  75%|███████▌  | 3/4 [01:38<00:32, 32.55s/it][A
+Evaluating: 100%|██████████| 4/4 [02:10<00:00, 32.44s/it][A
+                                                         [AHyperband iter: 2it [12:32, 373.14s/it]time remaining before zero shot filter: ~47m,25s
+Zero-Shot Filter: 868/1000 candidates kept. 132 rejected/removed. Training top 6.
+Rejected candidates by reason: {'too_few_conv_edges': 31, 'too_many_none_edges': 5, 'low_synflow_tail': 96}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9192 | naswot=1.6458e+02 | synflow=2.7330e+09 | Params=21572 | FLOPs=143397888
+  #2: final=0.8917 | naswot=1.6504e+02 | synflow=1.6387e+09 | Params=31228 | FLOPs=206640128
+  #3: final=0.8886 | naswot=1.5765e+02 | synflow=3.1978e+11 | Params=50692 | FLOPs=333452288
+  #4: final=0.8862 | naswot=1.6322e+02 | synflow=7.4570e+08 | Params=19228 | FLOPs=128390144
+  #5: final=0.8854 | naswot=1.6304e+02 | synflow=7.7412e+08 | Params=18212 | FLOPs=120984576
+time remaining after zero shot filter: ~47m,10s
+--- SH Iteration 1 | Target Budget: 17 Epochs | Active Models: 6
+
+Evaluating:   0%|          | 0/6 [00:00<?, ?it/s][A
+Evaluating:  17%|█▋        | 1/6 [00:51<04:19, 51.89s/it][A
+Evaluating:  33%|███▎      | 2/6 [01:44<03:29, 52.33s/it][A
+Evaluating:  50%|█████     | 3/6 [02:45<02:49, 56.45s/it][A
+Evaluating:  67%|██████▋   | 4/6 [03:37<01:48, 54.46s/it][A
+Evaluating:  83%|████████▎ | 5/6 [04:24<00:51, 51.74s/it][A
+Evaluating: 100%|██████████| 6/6 [05:23<00:00, 54.23s/it][A
+                                                         [AHyperband iter: 3it [18:10, 357.04s/it]time remaining before zero shot filter: ~41m,47s
+Zero-Shot Filter: 868/1000 candidates kept. 132 rejected/removed. Training top 4.
+Rejected candidates by reason: {'too_few_conv_edges': 30, 'too_many_none_edges': 6, 'low_synflow_tail': 96}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.0279 | naswot=1.5706e+02 | synflow=3.1383e+11 | Params=49084 | FLOPs=322638848
+  #2: final=0.9446 | naswot=1.6182e+02 | synflow=1.3291e+08 | Params=23180 | FLOPs=154211328
+  #3: final=0.9100 | naswot=1.5948e+02 | synflow=5.9971e+08 | Params=12940 | FLOPs=87102464
+  #4: final=0.8907 | naswot=1.5964e+02 | synflow=3.4909e+07 | Params=20404 | FLOPs=135664640
+  #5: final=0.8843 | naswot=1.5843e+02 | synflow=5.5656e+10 | Params=28452 | FLOPs=188093440
+time remaining after zero shot filter: ~41m,33s
+--- SH Iteration 1 | Target Budget: 50 Epochs | Active Models: 4
+
+Evaluating:   0%|          | 0/4 [00:00<?, ?it/s][A
+Evaluating:  25%|██▌       | 1/4 [03:00<09:02, 180.89s/it][A
+Evaluating:  50%|█████     | 2/4 [05:23<05:16, 158.27s/it][A
+Evaluating:  75%|███████▌  | 3/4 [07:30<02:24, 144.22s/it][A
+Evaluating: 100%|██████████| 4/4 [09:23<00:00, 131.75s/it][A
+                                                          [AHyperband iter: 4it [27:47, 444.14s/it]Hyperband iter: 4it [27:47, 416.95s/it]
+🏆 ALL-TIME BEST UPDATED: 18.08%
+
+============================================================
+🚀 Starting Hyperband Pass 2 | Time remaining for Search: 20m,10s
+============================================================
+
+============================================================
+Starting Hyperband Search...
+============================================================
+Hyperband iter: 0it [00:00, ?it/s]time remaining before zero shot filter: ~32m,9s
+Zero-Shot Filter: 861/1000 candidates kept. 139 rejected/removed. Training top 27.
+Rejected candidates by reason: {'too_few_conv_edges': 39, 'too_many_none_edges': 5, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9437 | naswot=1.6027e+02 | synflow=9.8325e+08 | Params=18796 | FLOPs=124851200
+  #2: final=0.9108 | naswot=1.5251e+02 | synflow=1.4960e+11 | Params=46156 | FLOPs=303764480
+  #3: final=0.8561 | naswot=1.5592e+02 | synflow=9.5953e+07 | Params=11180 | FLOPs=75961344
+  #4: final=0.8280 | naswot=1.5803e+02 | synflow=7.9372e+08 | Params=31228 | FLOPs=206640128
+  #5: final=0.8256 | naswot=1.5684e+02 | synflow=6.2328e+09 | Params=26844 | FLOPs=177280000
+time remaining after zero shot filter: ~31m,55s
+--- SH Iteration 1 | Target Budget: 2 Epochs | Active Models: 27
+
+Evaluating:   0%|          | 0/27 [00:00<?, ?it/s][A
+Evaluating:   4%|▎         | 1/27 [00:06<02:44,  6.32s/it][A
+Evaluating:   7%|▋         | 2/27 [00:14<02:59,  7.19s/it][A
+Evaluating:  11%|█         | 3/27 [00:19<02:36,  6.51s/it][A
+Evaluating:  15%|█▍        | 4/27 [00:26<02:33,  6.69s/it][A
+Evaluating:  19%|█▊        | 5/27 [00:33<02:29,  6.77s/it][A
+Evaluating:  22%|██▏       | 6/27 [00:41<02:28,  7.08s/it][A
+Evaluating:  26%|██▌       | 7/27 [00:49<02:26,  7.33s/it][A
+Evaluating:  30%|██▉       | 8/27 [00:54<02:06,  6.67s/it][A
+Evaluating:  33%|███▎      | 9/27 [00:59<01:51,  6.21s/it][A
+Evaluating:  37%|███▋      | 10/27 [01:05<01:41,  5.98s/it][A
+Evaluating:  41%|████      | 11/27 [01:11<01:37,  6.12s/it][A
+Evaluating:  44%|████▍     | 12/27 [01:19<01:38,  6.54s/it][A
+Evaluating:  48%|████▊     | 13/27 [01:24<01:27,  6.25s/it][A
+Evaluating:  52%|█████▏    | 14/27 [01:30<01:20,  6.20s/it][A
+Evaluating:  56%|█████▌    | 15/27 [01:37<01:16,  6.35s/it][A
+Evaluating:  59%|█████▉    | 16/27 [01:44<01:12,  6.61s/it][A
+Evaluating:  63%|██████▎   | 17/27 [01:51<01:05,  6.59s/it][A
+Evaluating:  67%|██████▋   | 18/27 [01:57<00:57,  6.35s/it][A
+Evaluating:  70%|███████   | 19/27 [02:03<00:52,  6.50s/it][A
+Evaluating:  74%|███████▍  | 20/27 [02:10<00:44,  6.41s/it][A
+Evaluating:  78%|███████▊  | 21/27 [02:16<00:37,  6.29s/it][A
+Evaluating:  81%|████████▏ | 22/27 [02:22<00:32,  6.44s/it][A
+Evaluating:  85%|████████▌ | 23/27 [02:28<00:24,  6.22s/it][A
+Evaluating:  89%|████████▉ | 24/27 [02:34<00:18,  6.12s/it][A
+Evaluating:  93%|█████████▎| 25/27 [02:40<00:12,  6.09s/it][A
+Evaluating:  96%|█████████▋| 26/27 [02:45<00:05,  5.76s/it][A
+Evaluating: 100%|██████████| 27/27 [02:52<00:00,  6.16s/it][A
+                                                           [A--- SH Iteration 2 | Target Budget: 6 Epochs | Active Models: 9
+
+Evaluating:   0%|          | 0/9 [00:00<?, ?it/s][A
+Evaluating:  11%|█         | 1/9 [00:12<01:42, 12.79s/it][A
+Evaluating:  22%|██▏       | 2/9 [00:24<01:24, 12.09s/it][A
+Evaluating:  33%|███▎      | 3/9 [00:35<01:09, 11.52s/it][A
+Evaluating:  44%|████▍     | 4/9 [00:50<01:04, 12.92s/it][A
+Evaluating:  56%|█████▌    | 5/9 [01:04<00:53, 13.29s/it][A
+Evaluating:  67%|██████▋   | 6/9 [01:13<00:36, 12.07s/it][A
+Evaluating:  78%|███████▊  | 7/9 [01:27<00:24, 12.47s/it][A
+Evaluating:  89%|████████▉ | 8/9 [01:39<00:12, 12.46s/it][A
+Evaluating: 100%|██████████| 9/9 [01:51<00:00, 12.24s/it][A
+                                                         [A--- SH Iteration 3 | Target Budget: 18 Epochs | Active Models: 3
+
+Evaluating:   0%|          | 0/3 [00:00<?, ?it/s][A
+Evaluating:  33%|███▎      | 1/3 [00:32<01:04, 32.17s/it][A
+Evaluating:  67%|██████▋   | 2/3 [01:07<00:33, 33.78s/it][A
+Evaluating: 100%|██████████| 3/3 [01:35<00:00, 31.42s/it][A
+                                                         [AHyperband iter: 1it [06:33, 393.74s/it]time remaining before zero shot filter: ~25m,35s
+Zero-Shot Filter: 858/1000 candidates kept. 142 rejected/removed. Training top 12.
+Rejected candidates by reason: {'too_few_conv_edges': 42, 'too_many_none_edges': 5, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.0561 | naswot=1.5793e+02 | synflow=6.1870e+10 | Params=31380 | FLOPs=206967808
+  #2: final=0.8855 | naswot=1.5934e+02 | synflow=2.8248e+08 | Params=11764 | FLOPs=79827968
+  #3: final=0.8740 | naswot=1.6025e+02 | synflow=2.7234e+09 | Params=23180 | FLOPs=154211328
+  #4: final=0.8699 | naswot=1.6014e+02 | synflow=1.7136e+07 | Params=20404 | FLOPs=135664640
+  #5: final=0.8542 | naswot=1.6018e+02 | synflow=1.3801e+10 | Params=39428 | FLOPs=259396608
+time remaining after zero shot filter: ~25m,21s
+--- SH Iteration 1 | Target Budget: 6 Epochs | Active Models: 12
+
+Evaluating:   0%|          | 0/12 [00:00<?, ?it/s][A
+Evaluating:   8%|▊         | 1/12 [00:19<03:34, 19.52s/it][A
+Evaluating:  17%|█▋        | 2/12 [00:37<03:03, 18.35s/it][A
+Evaluating:  25%|██▌       | 3/12 [00:55<02:43, 18.18s/it][A
+Evaluating:  33%|███▎      | 4/12 [01:09<02:12, 16.59s/it][A
+Evaluating:  42%|████▏     | 5/12 [01:30<02:08, 18.40s/it][A
+Evaluating:  50%|█████     | 6/12 [01:48<01:48, 18.03s/it][A
+Evaluating:  58%|█████▊    | 7/12 [02:08<01:33, 18.74s/it][A
+Evaluating:  67%|██████▋   | 8/12 [02:25<01:13, 18.36s/it][A
+Evaluating:  75%|███████▌  | 9/12 [02:46<00:57, 19.22s/it][A
+Evaluating:  83%|████████▎ | 10/12 [03:06<00:38, 19.39s/it][A
+Evaluating:  92%|█████████▏| 11/12 [03:25<00:19, 19.18s/it][A
+Evaluating: 100%|██████████| 12/12 [03:43<00:00, 18.89s/it][A
+                                                           [A--- SH Iteration 2 | Target Budget: 18 Epochs | Active Models: 4
+
+Evaluating:   0%|          | 0/4 [00:00<?, ?it/s][A
+Evaluating:  25%|██▌       | 1/4 [00:34<01:43, 34.45s/it][A
+Evaluating:  50%|█████     | 2/4 [01:11<01:11, 35.88s/it][A
+Evaluating:  75%|███████▌  | 3/4 [01:47<00:35, 35.89s/it][A
+Evaluating: 100%|██████████| 4/4 [02:14<00:00, 32.68s/it][A
+                                                         [AHyperband iter: 2it [12:46, 381.38s/it]time remaining before zero shot filter: ~19m,22s
+Zero-Shot Filter: 861/1000 candidates kept. 139 rejected/removed. Training top 6.
+Rejected candidates by reason: {'too_few_conv_edges': 38, 'too_many_none_edges': 6, 'low_synflow_tail': 95}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=0.9558 | naswot=1.5293e+02 | synflow=1.2813e+11 | Params=32404 | FLOPs=213914624
+  #2: final=0.9204 | naswot=1.6345e+02 | synflow=2.9029e+09 | Params=26692 | FLOPs=176952320
+  #3: final=0.8881 | naswot=1.5092e+02 | synflow=1.1438e+11 | Params=30060 | FLOPs=198906880
+  #4: final=0.8689 | naswot=1.6162e+02 | synflow=1.1192e+10 | Params=34156 | FLOPs=225514496
+  #5: final=0.8614 | naswot=1.5146e+02 | synflow=1.2075e+11 | Params=43380 | FLOPs=285217792
+time remaining after zero shot filter: ~19m,8s
+--- SH Iteration 1 | Target Budget: 17 Epochs | Active Models: 6
+
+Evaluating:   0%|          | 0/6 [00:00<?, ?it/s][A
+Evaluating:  17%|█▋        | 1/6 [00:49<04:07, 49.51s/it][A
+Evaluating:  33%|███▎      | 2/6 [01:42<03:25, 51.43s/it][A
+Evaluating:  50%|█████     | 3/6 [02:32<02:32, 50.98s/it][A
+Evaluating:  67%|██████▋   | 4/6 [03:28<01:45, 52.90s/it][A
+Evaluating:  83%|████████▎ | 5/6 [04:26<00:54, 54.83s/it][A
+Evaluating: 100%|██████████| 6/6 [05:12<00:00, 51.55s/it][A
+                                                         [AHyperband iter: 3it [18:12, 356.07s/it]time remaining before zero shot filter: ~13m,56s
+Zero-Shot Filter: 866/1000 candidates kept. 134 rejected/removed. Training top 4.
+Rejected candidates by reason: {'too_few_conv_edges': 25, 'too_many_none_edges': 13, 'low_synflow_tail': 96}
+Enabled proxies: ('naswot', 'synflow')
+Proxy weights: {'naswot': 1.0, 'synflow': 0.3, 'gradnorm': 0.2, 'snip': 0.2, 'zen': 0.2, 'fisher': 0.15, 'jacobian': 0.15}
+Efficiency weights: {'flops': 0.1, 'n_params': 0.1}
+
+Top 5 zero-shot candidates:
+  #1: final=1.0474 | naswot=1.6063e+02 | synflow=1.8688e+11 | Params=56548 | FLOPs=371201024
+  #2: final=0.9620 | naswot=1.5777e+02 | synflow=1.5385e+11 | Params=43964 | FLOPs=289084416
+  #3: final=0.8818 | naswot=1.6088e+02 | synflow=1.1772e+09 | Params=24348 | FLOPs=161944576
+  #4: final=0.8717 | naswot=1.5980e+02 | synflow=1.3100e+08 | Params=18644 | FLOPs=124523520
+  #5: final=0.8708 | naswot=1.6248e+02 | synflow=9.3435e+08 | Params=38844 | FLOPs=255529984
+time remaining after zero shot filter: ~13m,42s
+--- SH Iteration 1 | Target Budget: 50 Epochs | Active Models: 4
+
+Evaluating:   0%|          | 0/4 [00:00<?, ?it/s][A
+Evaluating:  25%|██▌       | 1/4 [03:14<09:42, 194.12s/it][A
+                                                          [AHyperband iter: 3it [21:40, 433.53s/it]
+⚠️ Search time limit 80% reached! Halting SH bracket early to save time for training.
+
+⚠️ Hyperband iteration halting immediately to respect search time limit.
+
+🛑 Search Phase Complete! Executed 2 full Hyperband passes.
+
+=== Training ===
+  Allotted compute time remaining: ~10m,28s
+	Epoch   1 | Train Acc:  26.09% | Valid Acc:  18.80% | T/Epoch: 2.56s   |
+	Epoch   2 | Train Acc:  26.82% | Valid Acc:  18.51% | T/Epoch: 2.47s   |
+	Epoch   3 | Train Acc:  26.88% | Valid Acc:  18.36% | T/Epoch: 2.47s   |
+	Epoch   4 | Train Acc:  26.51% | Valid Acc:  18.34% | T/Epoch: 2.52s   |
+	Epoch   5 | Train Acc:  27.07% | Valid Acc:  18.84% | T/Epoch: 2.47s   |
+	Epoch   6 | Train Acc:  27.09% | Valid Acc:  18.67% | T/Epoch: 2.51s   |
+	Epoch   7 | Train Acc:  26.97% | Valid Acc:  18.84% | T/Epoch: 2.47s   |
+	Epoch   8 | Train Acc:  27.42% | Valid Acc:  18.86% | T/Epoch: 2.47s   |
+	Epoch   9 | Train Acc:  27.30% | Valid Acc:  18.62% | T/Epoch: 2.51s   |
+	Epoch  10 | Train Acc:  27.45% | Valid Acc:  18.73% | T/Epoch: 2.47s   |
+	Epoch  11 | Train Acc:  27.30% | Valid Acc:  18.95% | T/Epoch: 2.52s   |
+	Epoch  12 | Train Acc:  27.32% | Valid Acc:  18.82% | T/Epoch: 2.46s   |
+	Epoch  13 | Train Acc:  27.22% | Valid Acc:  18.39% | T/Epoch: 2.46s   |
+	Epoch  14 | Train Acc:  27.56% | Valid Acc:  19.18% | T/Epoch: 2.51s   |
+	Epoch  15 | Train Acc:  27.22% | Valid Acc:  18.65% | T/Epoch: 2.45s   |
+	Epoch  16 | Train Acc:  27.07% | Valid Acc:  19.08% | T/Epoch: 2.51s   |
+	Epoch  17 | Train Acc:  27.39% | Valid Acc:  18.64% | T/Epoch: 2.45s   |
+	Epoch  18 | Train Acc:  27.02% | Valid Acc:  18.51% | T/Epoch: 2.46s   |
+	Epoch  19 | Train Acc:  27.27% | Valid Acc:  18.82% | T/Epoch: 2.51s   |
+	Epoch  20 | Train Acc:  27.26% | Valid Acc:  18.46% | T/Epoch: 2.46s   |
+	Epoch  21 | Train Acc:  27.72% | Valid Acc:  18.51% | T/Epoch: 2.51s   |
+	Epoch  22 | Train Acc:  27.54% | Valid Acc:  18.40% | T/Epoch: 2.45s   |
+	Epoch  23 | Train Acc:  27.78% | Valid Acc:  18.92% | T/Epoch: 2.46s   |
+	Epoch  24 | Train Acc:  27.45% | Valid Acc:  18.74% | T/Epoch: 2.50s   |
+	Epoch  25 | Train Acc:  27.84% | Valid Acc:  18.49% | T/Epoch: 2.45s   |
+	Epoch  26 | Train Acc:  27.70% | Valid Acc:  18.51% | T/Epoch: 2.50s   |
+	Epoch  27 | Train Acc:  28.01% | Valid Acc:  18.55% | T/Epoch: 2.46s   |
+	Epoch  28 | Train Acc:  27.32% | Valid Acc:  18.62% | T/Epoch: 2.45s   |
+	Epoch  29 | Train Acc:  27.70% | Valid Acc:  18.96% | T/Epoch: 2.51s   |
+	Epoch  30 | Train Acc:  27.25% | Valid Acc:  18.65% | T/Epoch: 2.46s   |
+	Epoch  31 | Train Acc:  27.49% | Valid Acc:  18.55% | T/Epoch: 2.51s   |
+	Epoch  32 | Train Acc:  27.73% | Valid Acc:  18.55% | T/Epoch: 2.45s   |
+	Epoch  33 | Train Acc:  27.73% | Valid Acc:  18.54% | T/Epoch: 2.45s   |
+	Epoch  34 | Train Acc:  27.71% | Valid Acc:  18.55% | T/Epoch: 2.50s   |
+	Epoch  35 | Train Acc:  27.76% | Valid Acc:  18.46% | T/Epoch: 2.46s   |
+	Epoch  36 | Train Acc:  27.69% | Valid Acc:  18.48% | T/Epoch: 2.50s   |
+	Epoch  37 | Train Acc:  27.73% | Valid Acc:  18.65% | T/Epoch: 2.45s   |
+	Epoch  38 | Train Acc:  27.46% | Valid Acc:  18.89% | T/Epoch: 2.46s   |
+	Epoch  39 | Train Acc:  27.57% | Valid Acc:  18.56% | T/Epoch: 2.51s   |
+	Epoch  40 | Train Acc:  27.72% | Valid Acc:  18.48% | T/Epoch: 2.47s   |
+	Epoch  41 | Train Acc:  27.74% | Valid Acc:  18.55% | T/Epoch: 2.53s   |
+	Epoch  42 | Train Acc:  27.96% | Valid Acc:  18.31% | T/Epoch: 2.49s   |
+	Epoch  43 | Train Acc:  27.42% | Valid Acc:  18.65% | T/Epoch: 2.50s   |
+	Epoch  44 | Train Acc:  27.58% | Valid Acc:  18.73% | T/Epoch: 2.54s   |
+	Epoch  45 | Train Acc:  27.59% | Valid Acc:  18.82% | T/Epoch: 2.46s   |
+	Epoch  46 | Train Acc:  27.54% | Valid Acc:  18.77% | T/Epoch: 2.51s   |
+	Epoch  47 | Train Acc:  27.57% | Valid Acc:  18.54% | T/Epoch: 2.46s   |
+	Epoch  48 | Train Acc:  27.48% | Valid Acc:  18.80% | T/Epoch: 2.46s   |
+	Epoch  49 | Train Acc:  27.96% | Valid Acc:  18.87% | T/Epoch: 2.51s   |
+	Epoch  50 | Train Acc:  27.28% | Valid Acc:  18.65% | T/Epoch: 2.45s   |
+	Epoch  51 | Train Acc:  27.81% | Valid Acc:  18.68% | T/Epoch: 2.50s   |
+	Epoch  52 | Train Acc:  27.66% | Valid Acc:  18.59% | T/Epoch: 2.45s   |
+	Epoch  53 | Train Acc:  27.25% | Valid Acc:  18.61% | T/Epoch: 2.45s   |
+	Epoch  54 | Train Acc:  27.64% | Valid Acc:  18.89% | T/Epoch: 2.50s   |
+	Epoch  55 | Train Acc:  27.86% | Valid Acc:  18.59% | T/Epoch: 2.45s   |
+	Epoch  56 | Train Acc:  27.76% | Valid Acc:  18.84% | T/Epoch: 2.50s   |
+	Epoch  57 | Train Acc:  27.77% | Valid Acc:  18.62% | T/Epoch: 2.46s   |
+	Epoch  58 | Train Acc:  27.84% | Valid Acc:  18.70% | T/Epoch: 2.45s   |
+	Epoch  59 | Train Acc:  27.52% | Valid Acc:  18.54% | T/Epoch: 2.51s   |
+	Epoch  60 | Train Acc:  27.90% | Valid Acc:  18.59% | T/Epoch: 2.45s   |
+	Epoch  61 | Train Acc:  27.69% | Valid Acc:  18.68% | T/Epoch: 2.50s   |
+	Epoch  62 | Train Acc:  27.68% | Valid Acc:  18.92% | T/Epoch: 2.45s   |
+	Epoch  63 | Train Acc:  27.59% | Valid Acc:  18.67% | T/Epoch: 2.45s   |
+	Epoch  64 | Train Acc:  27.66% | Valid Acc:  18.79% | T/Epoch: 2.50s   |
+
+🛑 Early stopping triggered! Validation accuracy hasn't improved in 50 epochs. Preventing overfitting.
+  Total training runtime: 2m,38s
+  Restoring best model weights (Val Acc: 19.18%)
+
+=== Predicting ===
+  Allotted compute time remaining: ~7m,49s
+Run time for windspeed: 3129.824744603
+Model Training and Prediction Complete
+finished dataset: windspeed
+done
+rm -Rf scoring
+mkdir scoring
+mkdir scoring/labels
+mkdir scoring/predictions
+rsync -avr --exclude='**/*x.npy' --exclude='**/train*.npy' --exclude='**/valid*.npy'   --include='**/test_y.npy' datasets/* scoring/labels/
+sending incremental file list
+cryptic/
+cryptic/._README.txt
+cryptic/._metadata
+cryptic/._test_y.npy
+cryptic/._train_y.npy
+cryptic/._valid_y.npy
+cryptic/README.txt
+cryptic/metadata
+cryptic/test_y.npy
+gameOfLife/
+gameOfLife/Example Image.png
+gameOfLife/README
+gameOfLife/metadata
+gameOfLife/test_y.npy
+windspeed/
+windspeed/._README.txt
+windspeed/._metadata
+windspeed/._test_y.npy
+windspeed/._train_y.npy
+windspeed/._valid_y.npy
+windspeed/README.txt
+windspeed/metadata
+windspeed/test_y.npy
+
+sent 292.613 bytes  received 416 bytes  586.058,00 bytes/sec
+total size is 291.119  speedup is 0,99
+cp -R package/predictions scoring
+cp evaluation/score.py scoring/score.py
+cd scoring; python score.py
+===========================================================================
+=============    Your Unseen Data 2025 Submission is scoring     =============
+===========================================================================
+== Scoring cryptic ==
+Raw Score:    69.596
+Adj Score:    6.485
+Model Params: 15202
+Runtime:      3,551.7s
+== Scoring gameOfLife ==
+Raw Score:    98.470
+Adj Score:    9.708
+Model Params: 48377
+Runtime:      3,393.1s
+== Scoring windspeed ==
+Raw Score:    20.238
+Adj Score:    0.780
+Model Params: 20404
+Runtime:      3,129.8s
+===========================
+Final Score: 16.974

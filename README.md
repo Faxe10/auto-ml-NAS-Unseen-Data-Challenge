@@ -29,7 +29,9 @@ The available runtime is estimated directly on the current dataset and hardware.
 ├── Makefile                   # Provided build, test, and packaging commands   
 ├── README.md                  # This file
 ├── README_Project.md          # Original competition documentation
-└── requirements.txt           # Python dependencies  
+├── requirements.txt           # Python dependencies 
+├── submission_final_log1.log  # 1-hour evaluation run on Conway, Cryptic, and Windspeed
+└── submission_final_log2.txt  # 1-hour evaluation run on Conway, Cryptic, and Windspeed
 ```
 Following are the files we worked on, the other files were provided with the template.
 
